@@ -7,9 +7,9 @@ All prompts should keep to the Camden frontend library and Storybook patterns: h
 ## Create a new multi-page service journey
 
 ```text
-Create a new Camden prototype journey for [service name].
+Create a new Camden prototype journey for [Record a goose sighting] service.
 
-Before changing files, inspect the existing Express/Nunjucks patterns in this repo, especially app/routes.js, app/views/permit, app/views/complaints, app/views/layouts/main.njk and app/views/macros/forms.njk.
+Before changing files, inspect the existing Express/Nunjucks patterns in this repo, especially app/routes.js, app/views/permit, app/views/complaints, app/views/layouts/main.njk and app/views/macros/forms.njk. 
 
 Use the existing architecture: routes in app/routes.js, pages in app/views/[journey-name], Camden frontend macros where appropriate, and session-backed answers in req.session.data.
 
@@ -17,13 +17,17 @@ Follow the Camden frontend library styles and Storybook patterns at https://main
 
 Create these pages:
 - Start page
-- [Page 1]
-- [Page 2]
-- [Page 3]
-- Check answers page
-- Confirmation page
+- Do you like geese? Yes or No
+- What type of goose did you see? Text input, single line
+- When did you see the goose? Date input with hint "For example, 16 4 2017"
+- Check your answers page
+- Confirmation page with random reference number
 
-Add validation for required form fields. Preserve existing code style and keep the implementation lightweight. After changing files, run a local check that the pages return successfully and tell me the local URL to open.
+All field require input so add validation for required form fields.
+
+Add a button on the homepage for this new service, above the Examples header. 
+
+Preserve existing code style and keep the implementation lightweight. After changing files, run a local check that the pages return successfully and tell me the local URL to open.
 ```
 
 ## Turn a sketch or wireframe into pages

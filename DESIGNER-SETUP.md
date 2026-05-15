@@ -26,9 +26,10 @@ If you already use `nvm`, the project includes `.nvmrc` so `start.command` and `
 ## Open the repo in Codex
 
 1. Open Codex.
-2. Choose **Open folder**.
+2. Choose **File > Open folder**.
 3. Select the folder you cloned with GitHub Desktop.
-4. Ask Codex to create or edit a Camden prototype journey.
+4. This will create a project with the name of the cloned repo.
+5. From here you can start prompting.
 
 Useful copy-paste prompts are in [PROMPTS.md](PROMPTS.md).
 
@@ -104,22 +105,4 @@ If GitHub Desktop says you have local changes, ask Codex to review them before u
 
 ## Password protect a deployed prototype
 
-Local prototypes do not need a password. Deployed prototypes should have one.
-
-When you deploy the prototype, add this environment variable in the deployment service:
-
-```text
-PROTOTYPE_PASSWORD
-```
-
-Set it to the password you want people to use. Do not commit the password to GitHub and do not put it in the code.
-
-When someone opens the deployed prototype, their browser will ask for a username and password. They can enter anything for the username. The password must match `PROTOTYPE_PASSWORD`.
-
-The password only turns on when the deployed app runs with:
-
-```text
-NODE_ENV=production
-```
-
-Most deployment services set this automatically. If `PROTOTYPE_PASSWORD` is missing in production, the prototype will show a configuration error instead of opening without a password.
+See [PUBLISHING.md](PUBLISHING.md) for how to publish a prototype to GitHub, deploy it on Render and set a password for deployed access.

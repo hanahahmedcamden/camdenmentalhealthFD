@@ -8,6 +8,8 @@ Start with [DESIGNER-SETUP.md](DESIGNER-SETUP.md). It explains how to clone the 
 
 Use [PROMPTS.md](PROMPTS.md) for copy-paste prompts that ask Codex to create or edit Camden service journeys using this kit's existing patterns.
 
+Use [PUBLISHING.md](PUBLISHING.md) when a prototype is ready to publish to GitHub, deploy on Render and password protect.
+
 ## Run it
 
 The easiest Mac option is to double-click:
@@ -41,9 +43,7 @@ Open `http://localhost:3010`.
 
 ## Deployed prototype password
 
-Set `PROTOTYPE_PASSWORD` in the deployment environment to password protect a deployed prototype. This is only enforced when `NODE_ENV=production`, so local designer startup stays password-free.
-
-The browser will show a basic username/password prompt. Any username is accepted; the password must match `PROTOTYPE_PASSWORD`.
+See [PUBLISHING.md](PUBLISHING.md) for GitHub publishing, Render deployment and deployed password instructions.
 
 ## Add a page
 
