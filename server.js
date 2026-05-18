@@ -67,6 +67,9 @@ app.use((req, res, next) => {
   if (req.path.startsWith('/goose-sighting')) {
     res.locals.serviceName = 'Record a goose sighting'
     res.locals.serviceHomeUrl = '/goose-sighting/start'
+  } else if (req.path.startsWith('/mental-health-referral')) {
+    res.locals.serviceName = 'Refer someone for mental health social care support'
+    res.locals.serviceHomeUrl = '/mental-health-referral/start'
   } else if (req.path.startsWith('/permit')) {
     res.locals.serviceName = 'Apply for a parking permit'
     res.locals.serviceHomeUrl = '/permit/start'

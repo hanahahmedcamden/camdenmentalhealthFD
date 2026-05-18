@@ -1,0 +1,43 @@
+{% extends "layouts/main.njk" %}
+{% from "components/button/macro.njk" import LBCamdenButton %}
+
+{% set pageTitle = "Check your answers" %}
+
+{% block beforeContent %}
+  <div class="govuk-width-container">
+    <a href="/mental-health-referral/current-situation" class="govuk-back-link">Back</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Check your answers</h1>
+
+        <dl class="govuk-summary-list">
+          {% for row in rows %}
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">{{ row.key }}</dt>
+              <dd class="govuk-summary-list__value">
+                {% for value in row.values %}
+                  {{ value }}{% if not loop.last %}<br>{% endif %}
+                {% endfor %}
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="{{ row.href }}">Change<span class="govuk-visually-hidden"> {{ row.key | lower }}</span></a>
+              </dd>
+            </div>
+          {% endfor %}
+        </dl>
+
+        <form action="/mental-health-referral/check-answers" method="post">
+          {{ LBCamdenButton({
+            text: "Continue",
+            preventDoubleClick: true
+          }) }}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

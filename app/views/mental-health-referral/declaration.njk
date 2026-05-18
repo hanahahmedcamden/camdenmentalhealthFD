@@ -1,0 +1,34 @@
+{% extends "layouts/main.njk" %}
+{% from "components/button/macro.njk" import LBCamdenButton %}
+
+{% set pageTitle = "Submit referral" %}
+
+{% block beforeContent %}
+  <div class="govuk-width-container">
+    <a href="/mental-health-referral/check-answers" class="govuk-back-link">Back</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Submit referral</h1>
+
+        <p class="govuk-body">By submitting this referral, you confirm that:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>this person has a primary mental health need and requires social care support</li>
+          <li>this person is not currently in an acute medical or psychiatric crisis</li>
+          <li>you understand we do not provide clinical treatment or medication management</li>
+        </ul>
+
+        <form action="/mental-health-referral/declaration" method="post">
+          {{ LBCamdenButton({
+            text: "Submit",
+            preventDoubleClick: true
+          }) }}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

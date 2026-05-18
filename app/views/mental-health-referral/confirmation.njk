@@ -1,0 +1,25 @@
+{% extends "layouts/main.njk" %}
+
+{% set pageTitle = "Referral received" %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-panel govuk-panel--confirmation">
+          <h1 class="govuk-panel__title">Referral received</h1>
+          <div class="govuk-panel__body">Reference number<br><strong>{{ data.mentalHealthReferenceNumber }}</strong></div>
+        </div>
+
+        <p class="govuk-body-l">Thank you for making a referral for mental health social care.</p>
+
+        <h2 class="govuk-heading-m">What happens next</h2>
+        <p class="govuk-body">We’ll send you an email confirming your referral has been received.</p>
+        <p class="govuk-body">The mental health social care team will review the referral and contact you if they need more information.</p>
+
+        <h2 class="govuk-heading-m">Prototype data</h2>
+        <pre class="app-prototype-data">{{ data | json }}</pre>
+      </div>
+    </div>
+  </div>
+{% endblock %}
