@@ -3,6 +3,7 @@
 {% from "components/button/macro.njk" import LBCamdenButton %}
 
 {% set pageTitle = "Do you like geese?" %}
+{% set checkedLikesGeese = selectedLikesGeese or [] %}
 
 {% block beforeContent %}
   <div class="govuk-width-container">
@@ -29,14 +30,14 @@
                 </p>
               {% endif %}
 
-              <div class="govuk-radios" data-module="govuk-radios">
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="likesGeese" name="likesGeese" type="radio" value="yes" {% if data.likesGeese == "yes" %}checked{% endif %}>
-                  <label class="govuk-label govuk-radios__label" for="likesGeese">Yes</label>
+              <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input" id="likesGeese" name="likesGeese" type="checkbox" value="yes" {% if data.likesGeese == "yes" or "yes" in checkedLikesGeese %}checked{% endif %}>
+                  <label class="govuk-label govuk-checkboxes__label" for="likesGeese">Yes</label>
                 </div>
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="likesGeese-2" name="likesGeese" type="radio" value="no" {% if data.likesGeese == "no" %}checked{% endif %}>
-                  <label class="govuk-label govuk-radios__label" for="likesGeese-2">No</label>
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input" id="likesGeese-2" name="likesGeese" type="checkbox" value="no" {% if data.likesGeese == "no" or "no" in checkedLikesGeese %}checked{% endif %}>
+                  <label class="govuk-label govuk-checkboxes__label" for="likesGeese-2">No</label>
                 </div>
               </div>
             </fieldset>

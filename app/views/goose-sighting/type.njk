@@ -1,8 +1,63 @@
 {% extends "layouts/main.njk" %}
-{% from "macros/forms.njk" import errorSummary, textInput %}
+{% from "macros/forms.njk" import errorSummary %}
 {% from "components/button/macro.njk" import LBCamdenButton %}
 
 {% set pageTitle = "What type of goose did you see?" %}
+{% set gooseTypes = [
+  "African goose",
+  "Aleutian cackling goose",
+  "American buff goose",
+  "Andean goose",
+  "Ashy-headed goose",
+  "Barnacle goose",
+  "Bar-headed goose",
+  "Bean goose",
+  "Blue-winged goose",
+  "Brant goose",
+  "Brecon buff goose",
+  "Buff-backed goose",
+  "Canada goose",
+  "Cape Barren goose",
+  "Chinese goose",
+  "Cackling goose",
+  "Cotton pygmy goose",
+  "Domestic greylag goose",
+  "Egyptian goose",
+  "Emperor goose",
+  "Embden goose",
+  "Falkland steamer goose",
+  "Greater Canada goose",
+  "Greater white-fronted goose",
+  "Greylag goose",
+  "Hawaiian goose",
+  "Kelp goose",
+  "Lesser Canada goose",
+  "Lesser white-fronted goose",
+  "Magellan goose",
+  "Magpie goose",
+  "Orinoco goose",
+  "Pink-footed goose",
+  "Pilgrim goose",
+  "Pomeranian goose",
+  "Red-breasted goose",
+  "Ross's goose",
+  "Sebastopol goose",
+  "Shetland goose",
+  "Snow goose",
+  "Spur-winged goose",
+  "Swan goose",
+  "Toulouse goose",
+  "Upland goose",
+  "West of England goose",
+  "White Chinese goose",
+  "White-fronted goose",
+  "Wood goose"
+] %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/accessible-autocomplete@3.0.1/dist/accessible-autocomplete.min.css">
+{% endblock %}
 
 {% block beforeContent %}
   <div class="govuk-width-container">
@@ -19,13 +74,24 @@
         <form action="/goose-sighting/type" method="post" novalidate>
           <h1 class="govuk-heading-xl">What type of goose did you see?</h1>
 
-          {{ textInput({
-            name: "gooseType",
-            label: "Type of goose",
-            classes: "govuk-input--width-20",
-            value: data.gooseType,
-            error: errors.gooseType
-          }) }}
+          <div class="govuk-form-group{% if errors.gooseType %} govuk-form-group--error{% endif %}">
+            <label class="govuk-label" for="gooseType">
+              Type of goose
+            </label>
+
+            {% if errors.gooseType %}
+              <p id="gooseType-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ errors.gooseType }}
+              </p>
+            {% endif %}
+
+            <select class="govuk-select govuk-!-width-full{% if errors.gooseType %} govuk-select--error{% endif %}" id="gooseType" name="gooseType"{% if errors.gooseType %} aria-describedby="gooseType-error"{% endif %}>
+              <option value=""></option>
+              {% for gooseType in gooseTypes %}
+                <option value="{{ gooseType }}" {% if data.gooseType == gooseType %}selected{% endif %}>{{ gooseType }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
           <div class="govuk-button-group">
             {{ LBCamdenButton({
@@ -37,4 +103,18 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block bodyEnd %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/accessible-autocomplete@3.0.1/dist/accessible-autocomplete.min.js"></script>
+  <script>
+    if (window.accessibleAutocomplete) {
+      accessibleAutocomplete.enhanceSelectElement({
+        selectElement: document.querySelector('#gooseType'),
+        defaultValue: '',
+        showAllValues: true
+      })
+    }
+  </script>
 {% endblock %}

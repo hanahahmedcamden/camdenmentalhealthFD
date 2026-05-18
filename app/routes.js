@@ -30,19 +30,26 @@ router.get('/goose-sighting/like-geese', (req, res) => {
 })
 
 router.post('/goose-sighting/like-geese', (req, res) => {
-  const { likesGeese } = req.body
+  const likesGeeseAnswers = Array.isArray(req.body.likesGeese)
+    ? req.body.likesGeese
+    : req.body.likesGeese ? [req.body.likesGeese] : []
   const errors = {}
 
-  if (!likesGeese) {
+  if (!likesGeeseAnswers.length) {
     errors.likesGeese = 'Select whether you like geese'
+  } else if (likesGeeseAnswers.length > 1) {
+    errors.likesGeese = 'Select only one answer'
   }
 
   if (Object.keys(errors).length) {
     return res.status(422).render('goose-sighting/like-geese', {
       errors,
-      errorList: errorListFrom(errors)
+      errorList: errorListFrom(errors),
+      selectedLikesGeese: likesGeeseAnswers
     })
   }
+
+  const [likesGeese] = likesGeeseAnswers
 
   req.session.data.likesGeese = likesGeese
 
