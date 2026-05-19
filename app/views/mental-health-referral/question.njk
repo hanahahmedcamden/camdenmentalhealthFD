@@ -189,7 +189,7 @@
         </div>
         <div class="govuk-checkboxes__conditional{% if not ("Email" in selectedContactMethods) %} govuk-checkboxes__conditional--hidden{% endif %}" id="{{ emailConditionalId }}">
           <div class="govuk-form-group{% if errors and errors[emailId] %} govuk-form-group--error{% endif %}">
-            <label class="govuk-label" for="{{ emailId }}">Enter your email address</label>
+            <label class="govuk-label" for="{{ emailId }}">{{ field.emailLabel or "Enter your email address" }}</label>
             {{ errorMessage(emailId, errors) }}
             <input class="govuk-input{% if errors and errors[emailId] %} govuk-input--error{% endif %}" id="{{ emailId }}" name="{{ emailId }}" type="email" value="{{ answerData[emailId] or '' }}" autocomplete="email" {% if errors and errors[emailId] %}aria-describedby="{{ emailId }}-error"{% endif %}>
           </div>
@@ -201,7 +201,7 @@
         </div>
         <div class="govuk-checkboxes__conditional{% if not ("Phone" in selectedContactMethods) %} govuk-checkboxes__conditional--hidden{% endif %}" id="{{ phoneConditionalId }}">
           <div class="govuk-form-group{% if errors and errors[phoneId] %} govuk-form-group--error{% endif %}">
-            <label class="govuk-label" for="{{ phoneId }}">Enter your phone number</label>
+            <label class="govuk-label" for="{{ phoneId }}">{{ field.phoneLabel or "Enter your phone number" }}</label>
             <div id="{{ phoneId }}-hint" class="govuk-hint">For international numbers include the country code</div>
             {{ errorMessage(phoneId, errors) }}
             <input class="govuk-input{% if errors and errors[phoneId] %} govuk-input--error{% endif %}" id="{{ phoneId }}" name="{{ phoneId }}" type="tel" value="{{ answerData[phoneId] or '' }}" autocomplete="tel" aria-describedby="{{ phoneId }}-hint{% if errors and errors[phoneId] %} {{ phoneId }}-error{% endif %}">

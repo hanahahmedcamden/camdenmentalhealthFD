@@ -91,7 +91,9 @@ const mentalHealthPages = [
         hint: 'Select all that apply',
         error: 'Select how we can contact the person you’re referring',
         emailName: 'personContactEmail',
-        phoneName: 'personContactPhone'
+        phoneName: 'personContactPhone',
+        emailLabel: 'Enter their email address',
+        phoneLabel: 'Enter their phone number'
       }
     ]
   },
@@ -129,7 +131,9 @@ const mentalHealthPages = [
         error: 'Select how we can contact their next of kin',
         emailName: 'nextOfKinContactEmail',
         phoneName: 'nextOfKinContactPhone',
-        emailConfirmationHint: ''
+        emailConfirmationHint: '',
+        emailLabel: 'Enter their email address',
+        phoneLabel: 'Enter their phone number'
       }
     ]
   },
@@ -166,7 +170,9 @@ const mentalHealthPages = [
         error: 'Select how we can contact their advocate',
         emailName: 'advocateContactEmail',
         phoneName: 'advocateContactPhone',
-        emailConfirmationHint: ''
+        emailConfirmationHint: '',
+        emailLabel: 'Enter their email address',
+        phoneLabel: 'Enter their phone number'
       }
     ]
   },
@@ -241,7 +247,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'communicationNeedsDetails', label: 'Tell us what communication needs they have', labelClasses: 'govuk-label--m', error: 'Tell us what communication needs they have' }
+            { type: 'textarea', name: 'communicationNeedsDetails', label: 'Tell us what communication needs they have', labelClasses: 'govuk-hint', error: 'Tell us what communication needs they have' }
           ]
         }
       },
@@ -256,7 +262,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'reasonableAdjustmentsDetails', label: 'Tell us what reasonable adjustments they need', labelClasses: 'govuk-label--m', error: 'Tell us what reasonable adjustments they need' }
+            { type: 'textarea', name: 'reasonableAdjustmentsDetails', label: 'Tell us what reasonable adjustments they need', labelClasses: 'govuk-hint', error: 'Tell us what reasonable adjustments they need' }
           ]
         }
       }
@@ -276,7 +282,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'confirmedDiagnosisDetails', label: 'Tell us what mental health conditions with a confirmed diagnosis they have', labelClasses: 'govuk-label--m', error: 'Tell us what mental health conditions with a confirmed diagnosis they have' }
+            { type: 'textarea', name: 'confirmedDiagnosisDetails', label: 'Tell us what mental health conditions with a confirmed diagnosis they have', labelClasses: 'govuk-hint', error: 'Tell us what mental health conditions with a confirmed diagnosis they have' }
           ]
         }
       },
@@ -290,7 +296,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'suspectedConditionsDetails', label: 'Tell us what suspected mental health conditions they have', labelClasses: 'govuk-label--m', error: 'Tell us what suspected mental health conditions they have' }
+            { type: 'textarea', name: 'suspectedConditionsDetails', label: 'Tell us what suspected mental health conditions they have', labelClasses: 'govuk-hint', error: 'Tell us what suspected mental health conditions they have' }
           ]
         }
       }
