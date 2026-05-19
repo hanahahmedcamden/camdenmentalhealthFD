@@ -234,13 +234,14 @@ const mentalHealthPages = [
         type: 'radios',
         name: 'hasCommunicationNeeds',
         label: 'Does the person you’re referring have any communication needs?',
+        labelClasses: 'govuk-fieldset__legend--m',
         hint: 'For example, they need a British Sign Language (BSL) interpreter or a translator',
         error: 'Select whether they have any communication needs',
         items: ['Yes', 'No'],
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'communicationNeedsDetails', label: 'Tell us what communication needs they have', error: 'Tell us what communication needs they have' }
+            { type: 'textarea', name: 'communicationNeedsDetails', label: 'Tell us what communication needs they have', labelClasses: 'govuk-label--m', error: 'Tell us what communication needs they have' }
           ]
         }
       },
@@ -248,13 +249,14 @@ const mentalHealthPages = [
         type: 'radios',
         name: 'needsReasonableAdjustments',
         label: 'Do they need any other reasonable adjustments?',
+        labelClasses: 'govuk-fieldset__legend--m',
         hint: 'For example, large print documents or wheelchair access',
         error: 'Select whether they need any other reasonable adjustments',
         items: ['Yes', 'No'],
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'reasonableAdjustmentsDetails', label: 'Tell us what reasonable adjustments they need', error: 'Tell us what reasonable adjustments they need' }
+            { type: 'textarea', name: 'reasonableAdjustmentsDetails', label: 'Tell us what reasonable adjustments they need', labelClasses: 'govuk-label--m', error: 'Tell us what reasonable adjustments they need' }
           ]
         }
       }
@@ -268,12 +270,13 @@ const mentalHealthPages = [
         type: 'radios',
         name: 'hasConfirmedDiagnosis',
         label: 'Do they have any mental health conditions with a confirmed diagnosis?',
+        labelClasses: 'govuk-fieldset__legend--m',
         error: 'Select whether they have any mental health conditions with a confirmed diagnosis',
         items: ['Yes', 'No'],
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'confirmedDiagnosisDetails', label: 'Tell us what mental health conditions with a confirmed diagnosis they have', error: 'Tell us what mental health conditions with a confirmed diagnosis they have' }
+            { type: 'textarea', name: 'confirmedDiagnosisDetails', label: 'Tell us what mental health conditions with a confirmed diagnosis they have', labelClasses: 'govuk-label--m', error: 'Tell us what mental health conditions with a confirmed diagnosis they have' }
           ]
         }
       },
@@ -281,12 +284,13 @@ const mentalHealthPages = [
         type: 'radios',
         name: 'hasSuspectedConditions',
         label: 'Do they have any suspected mental health conditions?',
+        labelClasses: 'govuk-fieldset__legend--m',
         error: 'Select whether they have any suspected mental health conditions',
         items: ['Yes', 'No'],
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'suspectedConditionsDetails', label: 'Tell us what suspected mental health conditions they have', error: 'Tell us what suspected mental health conditions they have' }
+            { type: 'textarea', name: 'suspectedConditionsDetails', label: 'Tell us what suspected mental health conditions they have', labelClasses: 'govuk-label--m', error: 'Tell us what suspected mental health conditions they have' }
           ]
         }
       }
@@ -458,6 +462,182 @@ const mentalHealthPageBySlug = Object.fromEntries(
   mentalHealthPages.map((page, index) => [page.slug, { ...page, index }])
 )
 
+const referralReasonFollowUpPages = [
+  {
+    reason: 'Safeguarding concern (Section 42)',
+    slug: 'safeguarding-concern-section-42',
+    title: 'Safeguarding concern (Section 42)',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'safeguardingConcernDetails',
+        label: 'Safeguarding concern (Section 42)',
+        hint: 'Describe the alleged abuse or neglect, who is involved, what are the immediate risks, and what immediate safety actions have been taken so far',
+        error: 'Enter details about the safeguarding concern'
+      }
+    ]
+  },
+  {
+    reason: 'New Care Act 2014 Assessment',
+    slug: 'new-care-act-2014-assessment',
+    title: 'New Care Act 2014 Assessment',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'careActAssessmentDetails',
+        label: 'New Care Act 2014 Assessment',
+        hint: 'What are the person’s primary needs for daily living?',
+        error: 'Enter the person’s primary needs for daily living'
+      }
+    ]
+  },
+  {
+    reason: 'Deep clean or environmental health',
+    slug: 'deep-clean-or-environmental-health',
+    title: 'Deep clean or environmental health',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'deepCleanHoardingDetails',
+        label: 'Is there hoarding involved?',
+        hint: 'Describe the level or scale',
+        error: 'Tell us if there is hoarding involved'
+      },
+      {
+        type: 'textarea',
+        name: 'deepCleanFireSafetyDetails',
+        label: 'Are there risks to health or fire safety?',
+        error: 'Tell us if there are risks to health or fire safety'
+      }
+    ]
+  },
+  {
+    reason: 'Supported housing or care home request',
+    slug: 'supported-housing-or-care-home-request',
+    title: 'Supported housing or care home request',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'supportedHousingDetails',
+        label: 'Supported housing or care home request',
+        hint: 'Why is the current accommodation no longer suitable? Include required support hours.',
+        error: 'Enter why the current accommodation is no longer suitable'
+      }
+    ]
+  },
+  {
+    reason: 'Carer support or assessment',
+    slug: 'carer-support-or-assessment',
+    title: 'Carer support or assessment',
+    fields: [
+      { type: 'text', name: 'carerName', label: 'Carer’s name', error: 'Enter the carer’s name' },
+      { type: 'text', name: 'carerRelationship', label: 'Carer’s relationship to the person', error: 'Enter the carer’s relationship to the person' },
+      {
+        type: 'textarea',
+        name: 'carerImpactDetails',
+        label: 'What is the current impact of the caring role?',
+        error: 'Enter the current impact of the caring role'
+      }
+    ]
+  },
+  {
+    reason: 'Review of existing package of care',
+    slug: 'review-of-existing-package-of-care',
+    title: 'Review of existing package of care',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'packageReviewDetails',
+        label: 'Review of existing package of care',
+        hint: 'What has changed since the last assessment that necessitates a review?',
+        error: 'Enter what has changed since the last assessment'
+      }
+    ]
+  },
+  {
+    reason: 'Voluntary sector or signposting (such as befriending, advocacy)',
+    slug: 'voluntary-sector-or-signposting',
+    title: 'Voluntary sector or signposting (such as befriending, advocacy)',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'voluntarySectorDetails',
+        label: 'Voluntary sector or signposting (such as befriending, advocacy)',
+        hint: 'What specific community links are required?',
+        error: 'Enter what specific community links are required'
+      }
+    ]
+  }
+]
+
+const referralReasonFollowUpBySlug = Object.fromEntries(
+  referralReasonFollowUpPages.map((page) => [page.slug, page])
+)
+
+function getSelectedReferralReasonFollowUps(data = {}) {
+  const selectedReasons = asArray(data.referralReasons)
+
+  return referralReasonFollowUpPages.filter((page) => selectedReasons.includes(page.reason))
+}
+
+function getReferralReasonFollowUpHref(page) {
+  return `${mentalHealthBasePath}/referral-reason/${page.slug}`
+}
+
+function getReferralReasonFollowUpBackHref(page, data) {
+  const selectedPages = getSelectedReferralReasonFollowUps(data)
+  const pageIndex = selectedPages.findIndex((selectedPage) => selectedPage.slug === page.slug)
+
+  if (pageIndex <= 0) {
+    return `${mentalHealthBasePath}/reason-for-referral`
+  }
+
+  return getReferralReasonFollowUpHref(selectedPages[pageIndex - 1])
+}
+
+function getReferralReasonFollowUpNextHref(page, data) {
+  const selectedPages = getSelectedReferralReasonFollowUps(data)
+  const pageIndex = selectedPages.findIndex((selectedPage) => selectedPage.slug === page.slug)
+  const nextPage = selectedPages[pageIndex + 1]
+
+  return nextPage ? getReferralReasonFollowUpHref(nextPage) : `${mentalHealthBasePath}/current-situation`
+}
+
+function getReferralReasonFollowUpPageNumber(page, data) {
+  const selectedPages = getSelectedReferralReasonFollowUps(data)
+  const pageIndex = selectedPages.findIndex((selectedPage) => selectedPage.slug === page.slug)
+
+  return `24.${pageIndex + 1}`
+}
+
+function clearUnselectedReferralReasonFollowUps(data) {
+  const selectedReasons = asArray(data.referralReasons)
+
+  referralReasonFollowUpPages
+    .filter((page) => !selectedReasons.includes(page.reason))
+    .forEach((page) => {
+      page.fields.forEach((field) => {
+        data[field.name] = field.type === 'checkboxGroup' ? [] : ''
+      })
+    })
+}
+
+function getReferralReasonFollowUpSummaryValues(page, data) {
+  return page.fields.map((field) => {
+    const value = data[field.name]
+
+    if (Array.isArray(value)) {
+      return value.join(', ')
+    }
+
+    if (!value) {
+      return ''
+    }
+
+    return page.fields.length === 1 ? value : `${field.label}: ${value}`
+  })
+}
+
 function getMentalHealthBackHref(page, data = {}) {
   if (!page.index) {
     return `${mentalHealthBasePath}/start`
@@ -467,12 +647,29 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/advocate`
   }
 
+  if (page.slug === 'current-situation') {
+    const selectedFollowUpPages = getSelectedReferralReasonFollowUps(data)
+    const lastFollowUpPage = selectedFollowUpPages[selectedFollowUpPages.length - 1]
+
+    if (lastFollowUpPage) {
+      return getReferralReasonFollowUpHref(lastFollowUpPage)
+    }
+  }
+
   return `${mentalHealthBasePath}/${mentalHealthPages[page.index - 1].slug}`
 }
 
 function getMentalHealthNextHref(page, data = {}) {
   if (page.slug === 'advocate' && data.hasAdvocate === 'No') {
     return `${mentalHealthBasePath}/identifiers`
+  }
+
+  if (page.slug === 'reason-for-referral') {
+    const [firstFollowUpPage] = getSelectedReferralReasonFollowUps(data)
+
+    if (firstFollowUpPage) {
+      return getReferralReasonFollowUpHref(firstFollowUpPage)
+    }
   }
 
   const nextPage = mentalHealthPages[page.index + 1]
@@ -772,6 +969,11 @@ function getMentalHealthSummaryRows(data) {
   }
 
   addMentalHealthSummaryRow(rows, 'Reason for referral', data.referralReasons, `${mentalHealthBasePath}/reason-for-referral`)
+
+  getSelectedReferralReasonFollowUps(data).forEach((page) => {
+    addMentalHealthSummaryRow(rows, page.title, getReferralReasonFollowUpSummaryValues(page, data), getReferralReasonFollowUpHref(page))
+  })
+
   addMentalHealthSummaryRow(rows, 'Current situation summary', data.currentSituationSummary, `${mentalHealthBasePath}/current-situation`)
   addMentalHealthSummaryRow(rows, 'Actions requested', data.requestedActions, `${mentalHealthBasePath}/current-situation`)
 
@@ -816,6 +1018,63 @@ router.get('/mental-health-referral/confirmation', (req, res) => {
   res.render('mental-health-referral/confirmation')
 })
 
+router.get('/mental-health-referral/referral-reason/:reasonSlug', (req, res, next) => {
+  const page = referralReasonFollowUpBySlug[req.params.reasonSlug]
+  const selectedPages = getSelectedReferralReasonFollowUps(req.session.data)
+
+  if (!page) {
+    return next()
+  }
+
+  if (!selectedPages.some((selectedPage) => selectedPage.slug === page.slug)) {
+    return res.redirect(`${mentalHealthBasePath}/reason-for-referral`)
+  }
+
+  res.render('mental-health-referral/question', {
+    page,
+    action: getReferralReasonFollowUpHref(page),
+    pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
+    backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
+    nextHref: getReferralReasonFollowUpNextHref(page, req.session.data)
+  })
+})
+
+router.post('/mental-health-referral/referral-reason/:reasonSlug', (req, res, next) => {
+  const page = referralReasonFollowUpBySlug[req.params.reasonSlug]
+  const selectedPages = getSelectedReferralReasonFollowUps(req.session.data)
+
+  if (!page) {
+    return next()
+  }
+
+  if (!selectedPages.some((selectedPage) => selectedPage.slug === page.slug)) {
+    return res.redirect(`${mentalHealthBasePath}/reason-for-referral`)
+  }
+
+  const values = normaliseMentalHealthBody(page, req.body)
+  const errors = validateMentalHealthPage(page, values)
+
+  if (Object.keys(errors).length) {
+    return res.status(422).render('mental-health-referral/question', {
+      page,
+      action: getReferralReasonFollowUpHref(page),
+      pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
+      backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
+      nextHref: getReferralReasonFollowUpNextHref(page, req.session.data),
+      errors,
+      errorList: errorListFrom(errors),
+      formData: {
+        ...req.session.data,
+        ...values
+      }
+    })
+  }
+
+  storeMentalHealthPageAnswers(page, values, req.session.data)
+
+  res.redirect(getReferralReasonFollowUpNextHref(page, req.session.data))
+})
+
 router.get('/mental-health-referral/:slug', (req, res, next) => {
   const page = mentalHealthPageBySlug[req.params.slug]
 
@@ -858,6 +1117,10 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   }
 
   storeMentalHealthPageAnswers(page, values, req.session.data)
+
+  if (page.slug === 'reason-for-referral') {
+    clearUnselectedReferralReasonFollowUps(req.session.data)
+  }
 
   if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {
     Object.assign(req.session.data, {
