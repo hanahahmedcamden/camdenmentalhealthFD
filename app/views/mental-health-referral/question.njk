@@ -34,7 +34,7 @@
   {% endif %}
 
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
-    <label class="govuk-label" for="{{ field.name }}">{{ field.label }}</label>
+    <label class="govuk-label{% if field.label == page.title %} govuk-visually-hidden{% endif %}" for="{{ field.name }}">{{ field.label }}</label>
     {{ fieldHint(field) }}
     {{ errorMessage(field.name, errors) }}
     <input
@@ -51,7 +51,7 @@
 
 {% macro renderTextarea(field, answerData, errors) %}
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
-    <label class="govuk-label" for="{{ field.name }}">{{ field.label }}</label>
+    <label class="govuk-label{% if field.label == page.title %} govuk-visually-hidden{% endif %}" for="{{ field.name }}">{{ field.label }}</label>
     {{ fieldHint(field) }}
     {{ errorMessage(field.name, errors) }}
     <textarea
@@ -70,7 +70,7 @@
   {% set yearName = field.name ~ "Year" %}
   <div class="govuk-form-group{% if errors and errors[dayName] %} govuk-form-group--error{% endif %}">
     <fieldset class="govuk-fieldset" role="group" aria-describedby="{{ field.name }}-hint{% if errors and errors[dayName] %} {{ dayName }}-error{% endif %}">
-      <legend class="govuk-fieldset__legend">{{ field.label }}</legend>
+      <legend class="govuk-fieldset__legend{% if field.label == page.title %} govuk-visually-hidden{% endif %}">{{ field.label }}</legend>
       {% if field.hint %}
         <div id="{{ field.name }}-hint" class="govuk-hint">{{ field.hint }}</div>
       {% endif %}
@@ -102,7 +102,7 @@
 
 {% macro renderSelect(field, answerData, errors) %}
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
-    <label class="govuk-label" for="{{ field.name }}">{{ field.label }}</label>
+    <label class="govuk-label{% if field.label == page.title %} govuk-visually-hidden{% endif %}" for="{{ field.name }}">{{ field.label }}</label>
     {{ fieldHint(field) }}
     {{ errorMessage(field.name, errors) }}
     <select class="govuk-select{% if errors and errors[field.name] %} govuk-select--error{% endif %}" id="{{ field.name }}" name="{{ field.name }}" {% if field.hint or errors[field.name] %}aria-describedby="{{ describedBy(field, errors) }}"{% endif %}>
@@ -117,7 +117,7 @@
 {% macro renderCheckboxGroup(field, answerData, errors) %}
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
     <fieldset class="govuk-fieldset" {% if field.hint or errors[field.name] %}aria-describedby="{{ describedBy(field, errors) }}"{% endif %}>
-      <legend class="govuk-fieldset__legend">{{ field.label }}</legend>
+      <legend class="govuk-fieldset__legend{% if field.label == page.title %} govuk-visually-hidden{% endif %}">{{ field.label }}</legend>
       {{ fieldHint(field) }}
       {{ errorMessage(field.name, errors) }}
       <div class="govuk-checkboxes" data-module="govuk-checkboxes">
@@ -136,7 +136,7 @@
 {% macro renderRadios(field, answerData, errors) %}
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
     <fieldset class="govuk-fieldset" {% if field.hint or errors[field.name] %}aria-describedby="{{ describedBy(field, errors) }}"{% endif %}>
-      <legend class="govuk-fieldset__legend">{{ field.label }}</legend>
+      <legend class="govuk-fieldset__legend{% if field.label == page.title %} govuk-visually-hidden{% endif %}">{{ field.label }}</legend>
       {{ fieldHint(field) }}
       {{ errorMessage(field.name, errors) }}
       <div class="govuk-radios" data-module="govuk-radios">
@@ -168,6 +168,50 @@
   </div>
 {% endmacro %}
 
+{% macro renderContactDetails(field, answerData, errors) %}
+  {% set selectedContactMethods = answerData[field.name] or [] %}
+  {% set emailId = field.emailName %}
+  {% set phoneId = field.phoneName %}
+  {% set emailConditionalId = "conditional-" ~ field.name ~ "-email" %}
+  {% set phoneConditionalId = "conditional-" ~ field.name ~ "-phone" %}
+  <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
+    <fieldset class="govuk-fieldset" {% if field.hint or errors[field.name] %}aria-describedby="{{ field.name }}-hint{% if errors[field.name] %} {{ field.name }}-error{% endif %}"{% endif %}>
+      <legend class="govuk-fieldset__legend govuk-visually-hidden">{{ field.label }}</legend>
+      {{ fieldHint(field) }}
+      {{ errorMessage(field.name, errors) }}
+      <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="{{ field.name }}" name="{{ field.name }}" type="checkbox" value="Email" data-aria-controls="{{ emailConditionalId }}" {% if "Email" in selectedContactMethods %}checked{% endif %}>
+          <label class="govuk-label govuk-checkboxes__label" for="{{ field.name }}">By Email</label>
+          {% if field.emailConfirmationHint != "" %}
+            <div class="govuk-hint govuk-checkboxes__hint">Confirmation we have received your referral will be sent here</div>
+          {% endif %}
+        </div>
+        <div class="govuk-checkboxes__conditional{% if not ("Email" in selectedContactMethods) %} govuk-checkboxes__conditional--hidden{% endif %}" id="{{ emailConditionalId }}">
+          <div class="govuk-form-group{% if errors and errors[emailId] %} govuk-form-group--error{% endif %}">
+            <label class="govuk-label" for="{{ emailId }}">Enter your email address</label>
+            {{ errorMessage(emailId, errors) }}
+            <input class="govuk-input{% if errors and errors[emailId] %} govuk-input--error{% endif %}" id="{{ emailId }}" name="{{ emailId }}" type="email" value="{{ answerData[emailId] or '' }}" autocomplete="email" {% if errors and errors[emailId] %}aria-describedby="{{ emailId }}-error"{% endif %}>
+          </div>
+        </div>
+
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="{{ field.name }}-2" name="{{ field.name }}" type="checkbox" value="Phone" data-aria-controls="{{ phoneConditionalId }}" {% if "Phone" in selectedContactMethods %}checked{% endif %}>
+          <label class="govuk-label govuk-checkboxes__label" for="{{ field.name }}-2">By phone</label>
+        </div>
+        <div class="govuk-checkboxes__conditional{% if not ("Phone" in selectedContactMethods) %} govuk-checkboxes__conditional--hidden{% endif %}" id="{{ phoneConditionalId }}">
+          <div class="govuk-form-group{% if errors and errors[phoneId] %} govuk-form-group--error{% endif %}">
+            <label class="govuk-label" for="{{ phoneId }}">Enter your phone number</label>
+            <div id="{{ phoneId }}-hint" class="govuk-hint">For international numbers include the country code</div>
+            {{ errorMessage(phoneId, errors) }}
+            <input class="govuk-input{% if errors and errors[phoneId] %} govuk-input--error{% endif %}" id="{{ phoneId }}" name="{{ phoneId }}" type="tel" value="{{ answerData[phoneId] or '' }}" autocomplete="tel" aria-describedby="{{ phoneId }}-hint{% if errors and errors[phoneId] %} {{ phoneId }}-error{% endif %}">
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+{% endmacro %}
+
 {% macro renderAddress(answerData, errors) %}
   <div class="govuk-form-group{% if errors and errors.personAddressLine1 %} govuk-form-group--error{% endif %}">
     <label class="govuk-label" for="personAddressLine1">Address line 1</label>
@@ -180,10 +224,9 @@
     <input class="govuk-input" id="personAddressLine2" name="personAddressLine2" type="text" value="{{ answerData.personAddressLine2 or '' }}" autocomplete="address-line2">
   </div>
 
-  <div class="govuk-form-group{% if errors and errors.personTownOrCity %} govuk-form-group--error{% endif %}">
-    <label class="govuk-label" for="personTownOrCity">Town or city</label>
-    {{ errorMessage("personTownOrCity", errors) }}
-    <input class="govuk-input govuk-!-width-two-thirds{% if errors and errors.personTownOrCity %} govuk-input--error{% endif %}" id="personTownOrCity" name="personTownOrCity" type="text" value="{{ answerData.personTownOrCity or '' }}" autocomplete="address-level2">
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="personTownOrCity">Town or city (optional)</label>
+    <input class="govuk-input govuk-!-width-two-thirds" id="personTownOrCity" name="personTownOrCity" type="text" value="{{ answerData.personTownOrCity or '' }}" autocomplete="address-level2">
   </div>
 
   <div class="govuk-form-group{% if errors and errors.personPostcode %} govuk-form-group--error{% endif %}">
@@ -192,22 +235,20 @@
     <input class="govuk-input govuk-input--width-10{% if errors and errors.personPostcode %} govuk-input--error{% endif %}" id="personPostcode" name="personPostcode" type="text" value="{{ answerData.personPostcode or '' }}" autocomplete="postal-code">
   </div>
 
-  <div class="govuk-form-group{% if errors and errors.personCurrentSituation %} govuk-form-group--error{% endif %}">
-    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-      <div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" id="personNoAddress" name="personNoAddress" type="checkbox" value="yes" data-aria-controls="conditional-personNoAddress" {% if answerData.personNoAddress == "yes" %}checked{% endif %}>
-        <label class="govuk-label govuk-checkboxes__label" for="personNoAddress">This person is homeless and does not have an address</label>
-      </div>
-      <div class="govuk-checkboxes__conditional{% if answerData.personNoAddress != 'yes' %} govuk-checkboxes__conditional--hidden{% endif %}" id="conditional-personNoAddress">
-        <div class="govuk-form-group{% if errors and errors.personCurrentSituation %} govuk-form-group--error{% endif %}">
-          <label class="govuk-label" for="personCurrentSituation">Tell us about their current situation</label>
-          <div id="personCurrentSituation-hint" class="govuk-hint">We need enough information to pass this referral to the right area team.</div>
-          {{ errorMessage("personCurrentSituation", errors) }}
-          <textarea class="govuk-textarea{% if errors and errors.personCurrentSituation %} govuk-textarea--error{% endif %}" id="personCurrentSituation" name="personCurrentSituation" rows="5" aria-describedby="personCurrentSituation-hint{% if errors and errors.personCurrentSituation %} personCurrentSituation-error{% endif %}">{{ answerData.personCurrentSituation or '' }}</textarea>
-        </div>
+  <details class="govuk-details" data-module="govuk-details" {% if answerData.personCurrentSituation %}open{% endif %}>
+    <summary class="govuk-details__summary">
+      <span class="govuk-details__summary-text">They do not have a permanent address</span>
+    </summary>
+    <div class="govuk-details__text">
+      <div class="govuk-form-group{% if errors and errors.personCurrentSituation %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label govuk-visually-hidden" for="personCurrentSituation">Tell us about their current situation</label>
+        <div id="personCurrentSituation-hint" class="govuk-hint">We need an address to pass their referral to the right area team. If they’re in temporary accommodation, use that address. If they’re homeless, tell us about their current situation</div>
+        {{ errorMessage("personCurrentSituation", errors) }}
+        <textarea class="govuk-textarea{% if errors and errors.personCurrentSituation %} govuk-textarea--error{% endif %}" id="personCurrentSituation" name="personCurrentSituation" rows="5" maxlength="200" aria-describedby="personCurrentSituation-hint personCurrentSituation-count{% if errors and errors.personCurrentSituation %} personCurrentSituation-error{% endif %}">{{ answerData.personCurrentSituation or '' }}</textarea>
+        <div id="personCurrentSituation-count" class="govuk-hint">You can enter up to 200 characters</div>
       </div>
     </div>
-  </div>
+  </details>
 {% endmacro %}
 
 {% macro renderField(field, answerData, errors) %}
@@ -223,6 +264,8 @@
     {{ renderCheckboxGroup(field, answerData, errors) }}
   {% elif field.type == "radios" %}
     {{ renderRadios(field, answerData, errors) }}
+  {% elif field.type == "contactDetails" %}
+    {{ renderContactDetails(field, answerData, errors) }}
   {% elif field.type == "address" %}
     {{ renderAddress(answerData, errors) }}
   {% endif %}
@@ -241,7 +284,11 @@
         {{ errorSummary(errorList) }}
 
         <form action="/mental-health-referral/{{ page.slug }}" method="post" novalidate>
-          <h1 class="govuk-heading-xl">{{ page.title }}</h1>
+          <span class="govuk-caption-m">Page {{ page.index + 1 }}</span>
+          <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ page.title }}</h1>
+          {% if page.hint %}
+            <div class="govuk-hint">{{ page.hint }}</div>
+          {% endif %}
 
           {% for field in page.fields %}
             {{ renderField(field, answerData, errors) }}

@@ -62,8 +62,15 @@ const mentalHealthPages = [
   {
     slug: 'home-address',
     title: 'What’s the full home address of the person you’re referring?',
+    hint: 'Enter the address where they live',
     fields: [
-      { type: 'address' },
+      { type: 'address' }
+    ]
+  },
+  {
+    slug: 'accommodation',
+    title: 'What type of accommodation do they live in?',
+    fields: [
       {
         type: 'radios',
         name: 'accommodationType',
@@ -75,16 +82,23 @@ const mentalHealthPages = [
   },
   {
     slug: 'contact-person',
-    title: 'Contacting the person you’re referring',
+    title: 'How can we contact the person you’re referring?',
     fields: [
       {
-        type: 'checkboxGroup',
+        type: 'contactDetails',
         name: 'personContactMethods',
         label: 'How can we contact the person you’re referring?',
         hint: 'Select all that apply',
         error: 'Select how we can contact the person you’re referring',
-        items: ['Email', 'Phone']
-      },
+        emailName: 'personContactEmail',
+        phoneName: 'personContactPhone'
+      }
+    ]
+  },
+  {
+    slug: 'preferred-contact',
+    title: 'What’s their preferred method of contact?',
+    fields: [
       {
         type: 'checkboxGroup',
         name: 'preferredContactMethods',
@@ -100,14 +114,22 @@ const mentalHealthPages = [
     title: 'Details of their next of kin',
     fields: [
       { type: 'text', name: 'nextOfKinFirstName', label: 'First name', error: 'Enter their next of kin’s first name', autocomplete: 'given-name' },
-      { type: 'text', name: 'nextOfKinLastName', label: 'Last name', error: 'Enter their next of kin’s last name', autocomplete: 'family-name' },
+      { type: 'text', name: 'nextOfKinLastName', label: 'Last name', error: 'Enter their next of kin’s last name', autocomplete: 'family-name' }
+    ]
+  },
+  {
+    slug: 'next-of-kin-contact',
+    title: 'How can we contact their next of kin?',
+    fields: [
       {
-        type: 'checkboxGroup',
+        type: 'contactDetails',
         name: 'nextOfKinContactMethods',
-        label: 'How can we contact them?',
+        label: 'How can we contact their next of kin?',
         hint: 'Select all that apply',
         error: 'Select how we can contact their next of kin',
-        items: ['Email', 'Phone']
+        emailName: 'nextOfKinContactEmail',
+        phoneName: 'nextOfKinContactPhone',
+        emailConfirmationHint: ''
       }
     ]
   },
@@ -120,22 +142,31 @@ const mentalHealthPages = [
         name: 'hasAdvocate',
         label: 'Does the person you’re referring have an advocate?',
         error: 'Select whether they have an advocate',
-        items: ['Yes', 'No'],
-        conditional: {
-          value: 'Yes',
-          fields: [
-            { type: 'text', name: 'advocateFirstName', label: 'First name', error: 'Enter the advocate’s first name', autocomplete: 'given-name' },
-            { type: 'text', name: 'advocateLastName', label: 'Last name', error: 'Enter the advocate’s last name', autocomplete: 'family-name' },
-            {
-              type: 'checkboxGroup',
-              name: 'advocateContactMethods',
-              label: 'How can we contact them?',
-              hint: 'Select all that apply',
-              error: 'Select how we can contact the advocate',
-              items: ['Email', 'Phone']
-            }
-          ]
-        }
+        items: ['Yes', 'No']
+      }
+    ]
+  },
+  {
+    slug: 'advocate-details',
+    title: 'Details of their advocate',
+    fields: [
+      { type: 'text', name: 'advocateFirstName', label: 'First name', error: 'Enter the advocate’s first name', autocomplete: 'given-name' },
+      { type: 'text', name: 'advocateLastName', label: 'Last name', error: 'Enter the advocate’s last name', autocomplete: 'family-name' }
+    ]
+  },
+  {
+    slug: 'advocate-contact',
+    title: 'How can we contact their advocate?',
+    fields: [
+      {
+        type: 'contactDetails',
+        name: 'advocateContactMethods',
+        label: 'How can we contact their advocate?',
+        hint: 'Select all that apply',
+        error: 'Select how we can contact their advocate',
+        emailName: 'advocateContactEmail',
+        phoneName: 'advocateContactPhone',
+        emailConfirmationHint: ''
       }
     ]
   },
@@ -427,21 +458,36 @@ const mentalHealthPageBySlug = Object.fromEntries(
   mentalHealthPages.map((page, index) => [page.slug, { ...page, index }])
 )
 
-function getMentalHealthBackHref(page) {
+function getMentalHealthBackHref(page, data = {}) {
   if (!page.index) {
     return `${mentalHealthBasePath}/start`
+  }
+
+  if (page.slug === 'identifiers' && data.hasAdvocate === 'No') {
+    return `${mentalHealthBasePath}/advocate`
   }
 
   return `${mentalHealthBasePath}/${mentalHealthPages[page.index - 1].slug}`
 }
 
-function getMentalHealthNextHref(page) {
+function getMentalHealthNextHref(page, data = {}) {
+  if (page.slug === 'advocate' && data.hasAdvocate === 'No') {
+    return `${mentalHealthBasePath}/identifiers`
+  }
+
   const nextPage = mentalHealthPages[page.index + 1]
 
   return nextPage ? `${mentalHealthBasePath}/${nextPage.slug}` : `${mentalHealthBasePath}/check-answers`
 }
 
 function normaliseMentalHealthField(field, body, values) {
+  if (field.type === 'contactDetails') {
+    values[field.name] = asArray(body[field.name])
+    values[field.emailName] = normaliseText(body[field.emailName])
+    values[field.phoneName] = normaliseText(body[field.phoneName])
+    return
+  }
+
   if (field.type === 'checkboxGroup') {
     values[field.name] = asArray(body[field.name])
     return
@@ -459,8 +505,8 @@ function normaliseMentalHealthField(field, body, values) {
     values.personAddressLine2 = normaliseText(body.personAddressLine2)
     values.personTownOrCity = normaliseText(body.personTownOrCity)
     values.personPostcode = normaliseText(body.personPostcode).toUpperCase()
-    values.personNoAddress = body.personNoAddress === 'yes' ? 'yes' : ''
     values.personCurrentSituation = normaliseText(body.personCurrentSituation)
+    values.personNoAddress = values.personCurrentSituation ? 'yes' : ''
     return
   }
 
@@ -484,6 +530,22 @@ function normaliseMentalHealthBody(page, body) {
 }
 
 function validateMentalHealthField(field, values, errors) {
+  if (field.type === 'contactDetails') {
+    if (!values[field.name] || !values[field.name].length) {
+      errors[field.name] = field.error
+    }
+
+    if (values[field.name] && values[field.name].includes('Email') && !values[field.emailName]) {
+      errors[field.emailName] = 'Enter an email address'
+    }
+
+    if (values[field.name] && values[field.name].includes('Phone') && !values[field.phoneName]) {
+      errors[field.phoneName] = 'Enter a phone number'
+    }
+
+    return
+  }
+
   if (field.type === 'checkboxGroup') {
     if (!values[field.name] || !values[field.name].length) {
       errors[field.name] = field.error
@@ -503,22 +565,16 @@ function validateMentalHealthField(field, values, errors) {
   }
 
   if (field.type === 'address') {
-    if (values.personNoAddress === 'yes') {
-      if (!values.personCurrentSituation) {
-        errors.personCurrentSituation = 'Tell us about their current situation'
-      }
-    } else {
+    if (!values.personCurrentSituation) {
       if (!values.personAddressLine1) {
         errors.personAddressLine1 = 'Enter the first line of their address'
-      }
-
-      if (!values.personTownOrCity) {
-        errors.personTownOrCity = 'Enter their town or city'
       }
 
       if (!values.personPostcode) {
         errors.personPostcode = 'Enter their postcode'
       }
+    } else if (values.personCurrentSituation.length > 200) {
+      errors.personCurrentSituation = 'Current situation must be 200 characters or fewer'
     }
 
     return
@@ -546,6 +602,13 @@ function validateMentalHealthPage(page, values) {
 }
 
 function storeMentalHealthField(field, values, sessionData) {
+  if (field.type === 'contactDetails') {
+    sessionData[field.name] = values[field.name] || []
+    sessionData[field.emailName] = values[field.name].includes('Email') ? values[field.emailName] : ''
+    sessionData[field.phoneName] = values[field.name].includes('Phone') ? values[field.phoneName] : ''
+    return
+  }
+
   if (field.type === 'checkboxGroup') {
     sessionData[field.name] = values[field.name] || []
     return
@@ -611,21 +674,38 @@ function getMentalHealthSummaryRows(data) {
   addMentalHealthSummaryRow(rows, 'Person being referred', `${data.personFirstName || ''} ${data.personLastName || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
   addMentalHealthSummaryRow(rows, 'Date of birth', `${data.personDateOfBirthDay || ''} ${data.personDateOfBirthMonth || ''} ${data.personDateOfBirthYear || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
 
-  if (data.personNoAddress === 'yes') {
-    addMentalHealthSummaryRow(rows, 'Home address', ['This person is homeless and does not have an address', data.personCurrentSituation], `${mentalHealthBasePath}/home-address`)
+  if (data.personCurrentSituation && !data.personAddressLine1 && !data.personPostcode) {
+    addMentalHealthSummaryRow(rows, 'Home address', ['They do not have a permanent address', data.personCurrentSituation], `${mentalHealthBasePath}/home-address`)
   } else {
     addMentalHealthSummaryRow(rows, 'Home address', [data.personAddressLine1, data.personAddressLine2, data.personTownOrCity, data.personPostcode], `${mentalHealthBasePath}/home-address`)
+
+    if (data.personCurrentSituation) {
+      addMentalHealthSummaryRow(rows, 'No permanent address details', data.personCurrentSituation, `${mentalHealthBasePath}/home-address`)
+    }
   }
 
-  addMentalHealthSummaryRow(rows, 'Accommodation type', data.accommodationType, `${mentalHealthBasePath}/home-address`)
-  addMentalHealthSummaryRow(rows, 'How we can contact them', data.personContactMethods, `${mentalHealthBasePath}/contact-person`)
-  addMentalHealthSummaryRow(rows, 'Preferred contact methods', data.preferredContactMethods, `${mentalHealthBasePath}/contact-person`)
+  addMentalHealthSummaryRow(rows, 'Accommodation type', data.accommodationType, `${mentalHealthBasePath}/accommodation`)
+  addMentalHealthSummaryRow(rows, 'How they would like to be contacted', [
+    ...(data.personContactMethods || []),
+    data.personContactEmail && `Email: ${data.personContactEmail}`,
+    data.personContactPhone && `Phone: ${data.personContactPhone}`
+  ], `${mentalHealthBasePath}/contact-person`)
+  addMentalHealthSummaryRow(rows, 'Preferred contact methods', data.preferredContactMethods, `${mentalHealthBasePath}/preferred-contact`)
   addMentalHealthSummaryRow(rows, 'Next of kin', `${data.nextOfKinFirstName || ''} ${data.nextOfKinLastName || ''}`.trim(), `${mentalHealthBasePath}/next-of-kin`)
-  addMentalHealthSummaryRow(rows, 'Next of kin contact methods', data.nextOfKinContactMethods, `${mentalHealthBasePath}/next-of-kin`)
+  addMentalHealthSummaryRow(rows, 'Next of kin contact methods', [
+    ...(data.nextOfKinContactMethods || []),
+    data.nextOfKinContactEmail && `Email: ${data.nextOfKinContactEmail}`,
+    data.nextOfKinContactPhone && `Phone: ${data.nextOfKinContactPhone}`
+  ], `${mentalHealthBasePath}/next-of-kin-contact`)
   addMentalHealthSummaryRow(rows, 'Has an advocate', data.hasAdvocate, `${mentalHealthBasePath}/advocate`)
 
   if (data.hasAdvocate === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Advocate details', [`${data.advocateFirstName || ''} ${data.advocateLastName || ''}`.trim(), ...(data.advocateContactMethods || [])], `${mentalHealthBasePath}/advocate`)
+    addMentalHealthSummaryRow(rows, 'Advocate details', `${data.advocateFirstName || ''} ${data.advocateLastName || ''}`.trim(), `${mentalHealthBasePath}/advocate-details`)
+    addMentalHealthSummaryRow(rows, 'Advocate contact methods', [
+      ...(data.advocateContactMethods || []),
+      data.advocateContactEmail && `Email: ${data.advocateContactEmail}`,
+      data.advocateContactPhone && `Phone: ${data.advocateContactPhone}`
+    ], `${mentalHealthBasePath}/advocate-contact`)
   }
 
   addMentalHealthSummaryRow(rows, 'Mosaic or NHS ID known', data.knowsMosaicOrNhsId, `${mentalHealthBasePath}/identifiers`)
@@ -745,8 +825,8 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
 
   res.render('mental-health-referral/question', {
     page,
-    backHref: getMentalHealthBackHref(page),
-    nextHref: getMentalHealthNextHref(page)
+    backHref: getMentalHealthBackHref(page, req.session.data),
+    nextHref: getMentalHealthNextHref(page, req.session.data)
   })
 })
 
@@ -763,8 +843,11 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   if (Object.keys(errors).length) {
     return res.status(422).render('mental-health-referral/question', {
       page,
-      backHref: getMentalHealthBackHref(page),
-      nextHref: getMentalHealthNextHref(page),
+      backHref: getMentalHealthBackHref(page, req.session.data),
+      nextHref: getMentalHealthNextHref(page, {
+        ...req.session.data,
+        ...values
+      }),
       errors,
       errorList: errorListFrom(errors),
       formData: {
@@ -776,7 +859,17 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
 
   storeMentalHealthPageAnswers(page, values, req.session.data)
 
-  res.redirect(getMentalHealthNextHref(page))
+  if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {
+    Object.assign(req.session.data, {
+      advocateFirstName: '',
+      advocateLastName: '',
+      advocateContactMethods: [],
+      advocateContactEmail: '',
+      advocateContactPhone: ''
+    })
+  }
+
+  res.redirect(getMentalHealthNextHref(page, req.session.data))
 })
 
 router.get('/goose-sighting', (req, res) => {
