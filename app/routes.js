@@ -464,8 +464,28 @@ const mentalHealthPages = [
   }
 ]
 
+const mentalHealthTotalPages = mentalHealthPages.length
+
+const mentalHealthSections = [
+  { title: 'Your details', start: 1, end: 2 },
+  { title: 'About the person you’re referring', start: 3, end: 15 },
+  { title: 'Health, communication and care needs', start: 16, end: 18 },
+  { title: 'Safety and risks', start: 19, end: 23 },
+  { title: 'Reason for referral', start: 24, end: 25 }
+]
+
+function getMentalHealthSectionTitle(pageNumber) {
+  const section = mentalHealthSections.find(({ start, end }) => pageNumber >= start && pageNumber <= end)
+
+  return section ? section.title : ''
+}
+
 const mentalHealthPageBySlug = Object.fromEntries(
-  mentalHealthPages.map((page, index) => [page.slug, { ...page, index }])
+  mentalHealthPages.map((page, index) => [page.slug, {
+    ...page,
+    index,
+    sectionTitle: getMentalHealthSectionTitle(index + 1)
+  }])
 )
 
 const referralReasonFollowUpPages = [
@@ -867,123 +887,139 @@ function addMentalHealthSummaryRow(rows, key, value, href) {
   })
 }
 
-function getMentalHealthSummaryRows(data) {
-  const rows = []
+function addMentalHealthSummarySection(sections, title) {
+  const section = {
+    title,
+    rows: []
+  }
 
-  addMentalHealthSummaryRow(rows, 'Your name', `${data.referrerFirstName || ''} ${data.referrerLastName || ''}`.trim(), `${mentalHealthBasePath}/your-details`)
-  addMentalHealthSummaryRow(rows, 'Job title', data.referrerJobTitle, `${mentalHealthBasePath}/your-details`)
-  addMentalHealthSummaryRow(rows, 'Organisation or team', data.referrerOrganisation, `${mentalHealthBasePath}/your-details`)
-  addMentalHealthSummaryRow(rows, 'Your contact details', [data.referrerEmail, data.referrerPhone], `${mentalHealthBasePath}/your-contact-details`)
-  addMentalHealthSummaryRow(rows, 'Person being referred', `${data.personFirstName || ''} ${data.personLastName || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
-  addMentalHealthSummaryRow(rows, 'Date of birth', `${data.personDateOfBirthDay || ''} ${data.personDateOfBirthMonth || ''} ${data.personDateOfBirthYear || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
+  sections.push(section)
+
+  return section.rows
+}
+
+function getMentalHealthSummarySections(data) {
+  const sections = []
+  const yourDetailsRows = addMentalHealthSummarySection(sections, 'Your details')
+  const personRows = addMentalHealthSummarySection(sections, 'About the person you’re referring')
+  const needsRows = addMentalHealthSummarySection(sections, 'Health, communication and care needs')
+  const safetyRows = addMentalHealthSummarySection(sections, 'Safety and risks')
+  const reasonRows = addMentalHealthSummarySection(sections, 'Reason for referral')
+
+  addMentalHealthSummaryRow(yourDetailsRows, 'Your name', `${data.referrerFirstName || ''} ${data.referrerLastName || ''}`.trim(), `${mentalHealthBasePath}/your-details`)
+  addMentalHealthSummaryRow(yourDetailsRows, 'Job title', data.referrerJobTitle, `${mentalHealthBasePath}/your-details`)
+  addMentalHealthSummaryRow(yourDetailsRows, 'Organisation or team', data.referrerOrganisation, `${mentalHealthBasePath}/your-details`)
+  addMentalHealthSummaryRow(yourDetailsRows, 'Your contact details', [data.referrerEmail, data.referrerPhone], `${mentalHealthBasePath}/your-contact-details`)
+  addMentalHealthSummaryRow(personRows, 'Person being referred', `${data.personFirstName || ''} ${data.personLastName || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
+  addMentalHealthSummaryRow(personRows, 'Date of birth', `${data.personDateOfBirthDay || ''} ${data.personDateOfBirthMonth || ''} ${data.personDateOfBirthYear || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
 
   if (data.personCurrentSituation && !data.personAddressLine1 && !data.personPostcode) {
-    addMentalHealthSummaryRow(rows, 'Home address', ['They do not have a permanent address', data.personCurrentSituation], `${mentalHealthBasePath}/home-address`)
+    addMentalHealthSummaryRow(personRows, 'Home address', ['They do not have a permanent address', data.personCurrentSituation], `${mentalHealthBasePath}/home-address`)
   } else {
-    addMentalHealthSummaryRow(rows, 'Home address', [data.personAddressLine1, data.personAddressLine2, data.personTownOrCity, data.personPostcode], `${mentalHealthBasePath}/home-address`)
+    addMentalHealthSummaryRow(personRows, 'Home address', [data.personAddressLine1, data.personAddressLine2, data.personTownOrCity, data.personPostcode], `${mentalHealthBasePath}/home-address`)
 
     if (data.personCurrentSituation) {
-      addMentalHealthSummaryRow(rows, 'No permanent address details', data.personCurrentSituation, `${mentalHealthBasePath}/home-address`)
+      addMentalHealthSummaryRow(personRows, 'No permanent address details', data.personCurrentSituation, `${mentalHealthBasePath}/home-address`)
     }
   }
 
-  addMentalHealthSummaryRow(rows, 'Accommodation type', data.accommodationType, `${mentalHealthBasePath}/accommodation`)
-  addMentalHealthSummaryRow(rows, 'How they would like to be contacted', [
+  addMentalHealthSummaryRow(personRows, 'Accommodation type', data.accommodationType, `${mentalHealthBasePath}/accommodation`)
+  addMentalHealthSummaryRow(personRows, 'How they would like to be contacted', [
     ...(data.personContactMethods || []),
     data.personContactEmail && `Email: ${data.personContactEmail}`,
     data.personContactPhone && `Phone: ${data.personContactPhone}`
   ], `${mentalHealthBasePath}/contact-person`)
-  addMentalHealthSummaryRow(rows, 'Preferred contact methods', data.preferredContactMethods, `${mentalHealthBasePath}/preferred-contact`)
-  addMentalHealthSummaryRow(rows, 'Next of kin', `${data.nextOfKinFirstName || ''} ${data.nextOfKinLastName || ''}`.trim(), `${mentalHealthBasePath}/next-of-kin`)
-  addMentalHealthSummaryRow(rows, 'Next of kin contact methods', [
+  addMentalHealthSummaryRow(personRows, 'Preferred contact methods', data.preferredContactMethods, `${mentalHealthBasePath}/preferred-contact`)
+  addMentalHealthSummaryRow(personRows, 'Next of kin', `${data.nextOfKinFirstName || ''} ${data.nextOfKinLastName || ''}`.trim(), `${mentalHealthBasePath}/next-of-kin`)
+  addMentalHealthSummaryRow(personRows, 'Next of kin contact methods', [
     ...(data.nextOfKinContactMethods || []),
     data.nextOfKinContactEmail && `Email: ${data.nextOfKinContactEmail}`,
     data.nextOfKinContactPhone && `Phone: ${data.nextOfKinContactPhone}`
   ], `${mentalHealthBasePath}/next-of-kin-contact`)
-  addMentalHealthSummaryRow(rows, 'Has an advocate', data.hasAdvocate, `${mentalHealthBasePath}/advocate`)
+  addMentalHealthSummaryRow(personRows, 'Has an advocate', data.hasAdvocate, `${mentalHealthBasePath}/advocate`)
 
   if (data.hasAdvocate === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Advocate details', `${data.advocateFirstName || ''} ${data.advocateLastName || ''}`.trim(), `${mentalHealthBasePath}/advocate-details`)
-    addMentalHealthSummaryRow(rows, 'Advocate contact methods', [
+    addMentalHealthSummaryRow(personRows, 'Advocate details', `${data.advocateFirstName || ''} ${data.advocateLastName || ''}`.trim(), `${mentalHealthBasePath}/advocate-details`)
+    addMentalHealthSummaryRow(personRows, 'Advocate contact methods', [
       ...(data.advocateContactMethods || []),
       data.advocateContactEmail && `Email: ${data.advocateContactEmail}`,
       data.advocateContactPhone && `Phone: ${data.advocateContactPhone}`
     ], `${mentalHealthBasePath}/advocate-contact`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Mosaic or NHS ID known', data.knowsMosaicOrNhsId, `${mentalHealthBasePath}/identifiers`)
+  addMentalHealthSummaryRow(personRows, 'Mosaic or NHS ID known', data.knowsMosaicOrNhsId, `${mentalHealthBasePath}/identifiers`)
 
   if (data.knowsMosaicOrNhsId === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Mosaic or NHS ID', data.mosaicOrNhsId, `${mentalHealthBasePath}/identifiers`)
+    addMentalHealthSummaryRow(personRows, 'Mosaic or NHS ID', data.mosaicOrNhsId, `${mentalHealthBasePath}/identifiers`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Your relationship to them', data.relationshipToPerson, `${mentalHealthBasePath}/relationship`)
-  addMentalHealthSummaryRow(rows, 'They know about the referral', data.personKnowsReferral, `${mentalHealthBasePath}/referral-awareness`)
+  addMentalHealthSummaryRow(personRows, 'Your relationship to them', data.relationshipToPerson, `${mentalHealthBasePath}/relationship`)
+  addMentalHealthSummaryRow(personRows, 'They know about the referral', data.personKnowsReferral, `${mentalHealthBasePath}/referral-awareness`)
 
   if (data.personKnowsReferral === 'No') {
-    addMentalHealthSummaryRow(rows, 'Why they do not know', data.referralNotKnownReason, `${mentalHealthBasePath}/referral-awareness`)
+    addMentalHealthSummaryRow(personRows, 'Why they do not know', data.referralNotKnownReason, `${mentalHealthBasePath}/referral-awareness`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Communication needs', data.hasCommunicationNeeds, `${mentalHealthBasePath}/communication-needs`)
+  addMentalHealthSummaryRow(needsRows, 'Communication needs', data.hasCommunicationNeeds, `${mentalHealthBasePath}/communication-needs`)
 
   if (data.hasCommunicationNeeds === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Communication needs details', data.communicationNeedsDetails, `${mentalHealthBasePath}/communication-needs`)
+    addMentalHealthSummaryRow(needsRows, 'Communication needs details', data.communicationNeedsDetails, `${mentalHealthBasePath}/communication-needs`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Reasonable adjustments', data.needsReasonableAdjustments, `${mentalHealthBasePath}/communication-needs`)
+  addMentalHealthSummaryRow(needsRows, 'Reasonable adjustments', data.needsReasonableAdjustments, `${mentalHealthBasePath}/communication-needs`)
 
   if (data.needsReasonableAdjustments === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Reasonable adjustments details', data.reasonableAdjustmentsDetails, `${mentalHealthBasePath}/communication-needs`)
+    addMentalHealthSummaryRow(needsRows, 'Reasonable adjustments details', data.reasonableAdjustmentsDetails, `${mentalHealthBasePath}/communication-needs`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Confirmed diagnosis', data.hasConfirmedDiagnosis, `${mentalHealthBasePath}/mental-health-conditions`)
+  addMentalHealthSummaryRow(needsRows, 'Confirmed diagnosis', data.hasConfirmedDiagnosis, `${mentalHealthBasePath}/mental-health-conditions`)
 
   if (data.hasConfirmedDiagnosis === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Confirmed diagnosis details', data.confirmedDiagnosisDetails, `${mentalHealthBasePath}/mental-health-conditions`)
+    addMentalHealthSummaryRow(needsRows, 'Confirmed diagnosis details', data.confirmedDiagnosisDetails, `${mentalHealthBasePath}/mental-health-conditions`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Suspected mental health conditions', data.hasSuspectedConditions, `${mentalHealthBasePath}/mental-health-conditions`)
+  addMentalHealthSummaryRow(needsRows, 'Suspected mental health conditions', data.hasSuspectedConditions, `${mentalHealthBasePath}/mental-health-conditions`)
 
   if (data.hasSuspectedConditions === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Suspected condition details', data.suspectedConditionsDetails, `${mentalHealthBasePath}/mental-health-conditions`)
+    addMentalHealthSummaryRow(needsRows, 'Suspected condition details', data.suspectedConditionsDetails, `${mentalHealthBasePath}/mental-health-conditions`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Clinical professionals involved', data.clinicalProfessionalsInvolved, `${mentalHealthBasePath}/clinical-professionals`)
+  addMentalHealthSummaryRow(needsRows, 'Clinical professionals involved', data.clinicalProfessionalsInvolved, `${mentalHealthBasePath}/clinical-professionals`)
 
   if (data.clinicalProfessionalsInvolved === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Clinical professional details', data.clinicalProfessionalsDetails, `${mentalHealthBasePath}/clinical-professionals`)
+    addMentalHealthSummaryRow(needsRows, 'Clinical professional details', data.clinicalProfessionalsDetails, `${mentalHealthBasePath}/clinical-professionals`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Lives with children', data.livesWithChildren, `${mentalHealthBasePath}/children`)
+  addMentalHealthSummaryRow(safetyRows, 'Lives with children', data.livesWithChildren, `${mentalHealthBasePath}/children`)
 
   if (data.livesWithChildren === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Children details', data.childrenDetails, `${mentalHealthBasePath}/children`)
+    addMentalHealthSummaryRow(safetyRows, 'Children details', data.childrenDetails, `${mentalHealthBasePath}/children`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Lives with pets', data.livesWithPets, `${mentalHealthBasePath}/pets`)
+  addMentalHealthSummaryRow(safetyRows, 'Lives with pets', data.livesWithPets, `${mentalHealthBasePath}/pets`)
 
   if (data.livesWithPets === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Pets details', data.petsDetails, `${mentalHealthBasePath}/pets`)
+    addMentalHealthSummaryRow(safetyRows, 'Pets details', data.petsDetails, `${mentalHealthBasePath}/pets`)
   }
 
-  addMentalHealthSummaryRow(rows, 'History of violence or aggression', data.historyOfViolenceOrAggression, `${mentalHealthBasePath}/violence-or-aggression`)
-  addMentalHealthSummaryRow(rows, 'Current risks', data.currentRisks, `${mentalHealthBasePath}/current-risks`)
-  addMentalHealthSummaryRow(rows, 'Environmental risks', data.hasEnvironmentalRisks, `${mentalHealthBasePath}/environmental-risks`)
+  addMentalHealthSummaryRow(safetyRows, 'History of violence or aggression', data.historyOfViolenceOrAggression, `${mentalHealthBasePath}/violence-or-aggression`)
+  addMentalHealthSummaryRow(safetyRows, 'Current risks', data.currentRisks, `${mentalHealthBasePath}/current-risks`)
+  addMentalHealthSummaryRow(safetyRows, 'Environmental risks', data.hasEnvironmentalRisks, `${mentalHealthBasePath}/environmental-risks`)
 
   if (data.hasEnvironmentalRisks === 'Yes') {
-    addMentalHealthSummaryRow(rows, 'Environmental risk details', data.environmentalRisksDetails, `${mentalHealthBasePath}/environmental-risks`)
+    addMentalHealthSummaryRow(safetyRows, 'Environmental risk details', data.environmentalRisksDetails, `${mentalHealthBasePath}/environmental-risks`)
   }
 
-  addMentalHealthSummaryRow(rows, 'Reason for referral', data.referralReasons, `${mentalHealthBasePath}/reason-for-referral`)
+  addMentalHealthSummaryRow(reasonRows, 'Reason for referral', data.referralReasons, `${mentalHealthBasePath}/reason-for-referral`)
 
   getSelectedReferralReasonFollowUps(data).forEach((page) => {
-    addMentalHealthSummaryRow(rows, page.title, getReferralReasonFollowUpSummaryValues(page, data), getReferralReasonFollowUpHref(page))
+    addMentalHealthSummaryRow(reasonRows, page.title, getReferralReasonFollowUpSummaryValues(page, data), getReferralReasonFollowUpHref(page))
   })
 
-  addMentalHealthSummaryRow(rows, 'Current situation summary', data.currentSituationSummary, `${mentalHealthBasePath}/current-situation`)
-  addMentalHealthSummaryRow(rows, 'Actions requested', data.requestedActions, `${mentalHealthBasePath}/current-situation`)
+  addMentalHealthSummaryRow(reasonRows, 'Current situation summary', data.currentSituationSummary, `${mentalHealthBasePath}/current-situation`)
+  addMentalHealthSummaryRow(reasonRows, 'Actions requested', data.requestedActions, `${mentalHealthBasePath}/current-situation`)
 
-  return rows
+  return sections
 }
 
 router.get('/', (req, res) => {
@@ -1000,7 +1036,7 @@ router.get('/mental-health-referral/start', (req, res) => {
 
 router.get('/mental-health-referral/check-answers', (req, res) => {
   res.render('mental-health-referral/check-answers', {
-    rows: getMentalHealthSummaryRows(req.session.data)
+    sections: getMentalHealthSummarySections(req.session.data)
   })
 })
 
@@ -1040,6 +1076,8 @@ router.get('/mental-health-referral/referral-reason/:reasonSlug', (req, res, nex
     page,
     action: getReferralReasonFollowUpHref(page),
     pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
+    totalPages: mentalHealthTotalPages,
+    sectionTitle: getMentalHealthSectionTitle(24),
     backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
     nextHref: getReferralReasonFollowUpNextHref(page, req.session.data)
   })
@@ -1065,6 +1103,8 @@ router.post('/mental-health-referral/referral-reason/:reasonSlug', (req, res, ne
       page,
       action: getReferralReasonFollowUpHref(page),
       pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
+      totalPages: mentalHealthTotalPages,
+      sectionTitle: getMentalHealthSectionTitle(24),
       backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
       nextHref: getReferralReasonFollowUpNextHref(page, req.session.data),
       errors,
@@ -1090,6 +1130,7 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
 
   res.render('mental-health-referral/question', {
     page,
+    totalPages: mentalHealthTotalPages,
     backHref: getMentalHealthBackHref(page, req.session.data),
     nextHref: getMentalHealthNextHref(page, req.session.data)
   })
@@ -1108,6 +1149,7 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   if (Object.keys(errors).length) {
     return res.status(422).render('mental-health-referral/question', {
       page,
+      totalPages: mentalHealthTotalPages,
       backHref: getMentalHealthBackHref(page, req.session.data),
       nextHref: getMentalHealthNextHref(page, {
         ...req.session.data,
