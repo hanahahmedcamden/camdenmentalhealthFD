@@ -176,13 +176,13 @@
   {% set phoneConditionalId = "conditional-" ~ field.name ~ "-phone" %}
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
     <fieldset class="govuk-fieldset" {% if field.hint or errors[field.name] %}aria-describedby="{{ field.name }}-hint{% if errors[field.name] %} {{ field.name }}-error{% endif %}"{% endif %}>
-      <legend class="govuk-fieldset__legend govuk-visually-hidden">{{ field.label }}</legend>
+      <legend class="govuk-fieldset__legend{% if field.labelClasses %} {{ field.labelClasses }}{% else %} govuk-visually-hidden{% endif %}">{{ field.label }}</legend>
       {{ fieldHint(field) }}
       {{ errorMessage(field.name, errors) }}
       <div class="govuk-checkboxes" data-module="govuk-checkboxes">
         <div class="govuk-checkboxes__item">
           <input class="govuk-checkboxes__input" id="{{ field.name }}" name="{{ field.name }}" type="checkbox" value="Email" data-aria-controls="{{ emailConditionalId }}" {% if "Email" in selectedContactMethods %}checked{% endif %}>
-          <label class="govuk-label govuk-checkboxes__label" for="{{ field.name }}">By Email</label>
+          <label class="govuk-label govuk-checkboxes__label" for="{{ field.name }}">{{ field.emailOptionLabel or "By email" }}</label>
           {% if field.emailConfirmationHint != "" %}
             <div class="govuk-hint govuk-checkboxes__hint">Confirmation we have received your referral will be sent here</div>
           {% endif %}
@@ -197,7 +197,7 @@
 
         <div class="govuk-checkboxes__item">
           <input class="govuk-checkboxes__input" id="{{ field.name }}-2" name="{{ field.name }}" type="checkbox" value="Phone" data-aria-controls="{{ phoneConditionalId }}" {% if "Phone" in selectedContactMethods %}checked{% endif %}>
-          <label class="govuk-label govuk-checkboxes__label" for="{{ field.name }}-2">By phone</label>
+          <label class="govuk-label govuk-checkboxes__label" for="{{ field.name }}-2">{{ field.phoneOptionLabel or "By phone" }}</label>
         </div>
         <div class="govuk-checkboxes__conditional{% if not ("Phone" in selectedContactMethods) %} govuk-checkboxes__conditional--hidden{% endif %}" id="{{ phoneConditionalId }}">
           <div class="govuk-form-group{% if errors and errors[phoneId] %} govuk-form-group--error{% endif %}">
@@ -244,8 +244,8 @@
         <label class="govuk-label govuk-visually-hidden" for="personCurrentSituation">Tell us about their current situation</label>
         <div id="personCurrentSituation-hint" class="govuk-hint">We need an address to pass their referral to the right area team. If they’re in temporary accommodation, use that address. If they’re homeless, tell us about their current situation</div>
         {{ errorMessage("personCurrentSituation", errors) }}
-        <textarea class="govuk-textarea{% if errors and errors.personCurrentSituation %} govuk-textarea--error{% endif %}" id="personCurrentSituation" name="personCurrentSituation" rows="5" maxlength="200" aria-describedby="personCurrentSituation-hint personCurrentSituation-count{% if errors and errors.personCurrentSituation %} personCurrentSituation-error{% endif %}">{{ answerData.personCurrentSituation or '' }}</textarea>
-        <div id="personCurrentSituation-count" class="govuk-hint">You can enter up to 200 characters</div>
+        <textarea class="govuk-textarea{% if errors and errors.personCurrentSituation %} govuk-textarea--error{% endif %}" id="personCurrentSituation" name="personCurrentSituation" rows="5" maxlength="500" aria-describedby="personCurrentSituation-hint personCurrentSituation-count{% if errors and errors.personCurrentSituation %} personCurrentSituation-error{% endif %}">{{ answerData.personCurrentSituation or '' }}</textarea>
+        <div id="personCurrentSituation-count" class="govuk-hint">You can enter up to 500 characters</div>
       </div>
     </div>
   </details>

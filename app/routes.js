@@ -92,6 +92,7 @@ const mentalHealthPages = [
         error: 'Select how we can contact the person you’re referring',
         emailName: 'personContactEmail',
         phoneName: 'personContactPhone',
+        emailConfirmationHint: '',
         emailLabel: 'Enter their email address',
         phoneLabel: 'Enter their phone number'
       }
@@ -113,27 +114,43 @@ const mentalHealthPages = [
   },
   {
     slug: 'next-of-kin',
-    title: 'Details of their next of kin',
+    title: 'Do you know details for their next of kin?',
     fields: [
-      { type: 'text', name: 'nextOfKinFirstName', label: 'First name', error: 'Enter their next of kin’s first name', autocomplete: 'given-name' },
-      { type: 'text', name: 'nextOfKinLastName', label: 'Last name', error: 'Enter their next of kin’s last name', autocomplete: 'family-name' }
+      {
+        type: 'radios',
+        name: 'hasNextOfKinDetails',
+        label: 'Do you know details for their next of kin?',
+        labelClasses: 'govuk-fieldset__legend--m',
+        error: 'Select whether you know details for their next of kin',
+        items: ['Yes', 'No']
+      }
     ]
   },
   {
     slug: 'next-of-kin-contact',
-    title: 'How can we contact their next of kin?',
+    title: 'Details of their next of kin',
     fields: [
+      { type: 'text', name: 'nextOfKinFirstName', label: 'First name', error: 'Enter their next of kin’s first name', autocomplete: 'given-name' },
+      { type: 'text', name: 'nextOfKinLastName', label: 'Last name', error: 'Enter their next of kin’s last name', autocomplete: 'family-name' },
       {
         type: 'contactDetails',
         name: 'nextOfKinContactMethods',
-        label: 'How can we contact their next of kin?',
+        label: 'How can we contact them?',
+        labelClasses: 'govuk-fieldset__legend--m',
         hint: 'Select all that apply',
-        error: 'Select how we can contact their next of kin',
+        error: 'Select how we can contact them',
         emailName: 'nextOfKinContactEmail',
         phoneName: 'nextOfKinContactPhone',
         emailConfirmationHint: '',
         emailLabel: 'Enter their email address',
         phoneLabel: 'Enter their phone number'
+      },
+      {
+        type: 'text',
+        name: 'nextOfKinRelationship',
+        label: 'What’s their relationship to the person you’re referring?',
+        hint: 'For example, parent, sibling, friend',
+        error: 'Enter their relationship to the person you’re referring'
       }
     ]
   },
@@ -155,19 +172,14 @@ const mentalHealthPages = [
     title: 'Details of their advocate',
     fields: [
       { type: 'text', name: 'advocateFirstName', label: 'First name', error: 'Enter the advocate’s first name', autocomplete: 'given-name' },
-      { type: 'text', name: 'advocateLastName', label: 'Last name', error: 'Enter the advocate’s last name', autocomplete: 'family-name' }
-    ]
-  },
-  {
-    slug: 'advocate-contact',
-    title: 'How can we contact their advocate?',
-    fields: [
+      { type: 'text', name: 'advocateLastName', label: 'Last name', error: 'Enter the advocate’s last name', autocomplete: 'family-name' },
       {
         type: 'contactDetails',
         name: 'advocateContactMethods',
-        label: 'How can we contact their advocate?',
+        label: 'How can we contact them?',
+        labelClasses: 'govuk-fieldset__legend--m',
         hint: 'Select all that apply',
-        error: 'Select how we can contact their advocate',
+        error: 'Select how we can contact them',
         emailName: 'advocateContactEmail',
         phoneName: 'advocateContactPhone',
         emailConfirmationHint: '',
@@ -178,18 +190,18 @@ const mentalHealthPages = [
   },
   {
     slug: 'identifiers',
-    title: 'Do you know their Mosaic or NHS ID?',
+    title: 'Do you know their NHS number?',
     fields: [
       {
         type: 'radios',
-        name: 'knowsMosaicOrNhsId',
-        label: 'Do you know their Mosaic or NHS ID?',
-        error: 'Select whether you know their Mosaic or NHS ID',
+        name: 'knowsNhsNumber',
+        label: 'Do you know their NHS number?',
+        error: 'Select whether you know their NHS number',
         items: ['Yes', 'No'],
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'text', name: 'mosaicOrNhsId', label: 'Tell us their Mosaic or NHS ID', error: 'Enter their Mosaic or NHS ID' }
+            { type: 'text', name: 'nhsNumber', label: 'Tell us their NHS number', error: 'Enter their NHS number' }
           ]
         }
       }
@@ -468,10 +480,10 @@ const mentalHealthTotalPages = mentalHealthPages.length
 
 const mentalHealthSections = [
   { title: 'Your details', start: 1, end: 2 },
-  { title: 'About the person you’re referring', start: 3, end: 15 },
-  { title: 'Health, communication and care needs', start: 16, end: 18 },
-  { title: 'Safety and risks', start: 19, end: 23 },
-  { title: 'Reason for referral', start: 24, end: 25 }
+  { title: 'About the person you’re referring', start: 3, end: 14 },
+  { title: 'Health, communication and care needs', start: 15, end: 17 },
+  { title: 'Safety and risks', start: 18, end: 22 },
+  { title: 'Reason for referral', start: 23, end: 24 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -487,6 +499,10 @@ const mentalHealthPageBySlug = Object.fromEntries(
     sectionTitle: getMentalHealthSectionTitle(index + 1)
   }])
 )
+
+function getMentalHealthPageNumber(slug) {
+  return mentalHealthPageBySlug[slug].index + 1
+}
 
 const referralReasonFollowUpPages = [
   {
@@ -633,7 +649,7 @@ function getReferralReasonFollowUpPageNumber(page, data) {
   const selectedPages = getSelectedReferralReasonFollowUps(data)
   const pageIndex = selectedPages.findIndex((selectedPage) => selectedPage.slug === page.slug)
 
-  return `24.${pageIndex + 1}`
+  return `${getMentalHealthPageNumber('reason-for-referral')}.${pageIndex + 1}`
 }
 
 function clearUnselectedReferralReasonFollowUps(data) {
@@ -669,8 +685,16 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/start`
   }
 
+  if (page.slug === 'advocate' && data.hasNextOfKinDetails === 'No') {
+    return `${mentalHealthBasePath}/next-of-kin`
+  }
+
   if (page.slug === 'identifiers' && data.hasAdvocate === 'No') {
     return `${mentalHealthBasePath}/advocate`
+  }
+
+  if (page.slug === 'identifiers' && data.hasAdvocate === 'Yes') {
+    return `${mentalHealthBasePath}/advocate-details`
   }
 
   if (page.slug === 'current-situation') {
@@ -686,7 +710,17 @@ function getMentalHealthBackHref(page, data = {}) {
 }
 
 function getMentalHealthNextHref(page, data = {}) {
+  if (page.slug === 'next-of-kin') {
+    return data.hasNextOfKinDetails === 'No'
+      ? `${mentalHealthBasePath}/advocate`
+      : `${mentalHealthBasePath}/next-of-kin-contact`
+  }
+
   if (page.slug === 'advocate' && data.hasAdvocate === 'No') {
+    return `${mentalHealthBasePath}/identifiers`
+  }
+
+  if (page.slug === 'advocate-details') {
     return `${mentalHealthBasePath}/identifiers`
   }
 
@@ -796,8 +830,8 @@ function validateMentalHealthField(field, values, errors) {
       if (!values.personPostcode) {
         errors.personPostcode = 'Enter their postcode'
       }
-    } else if (values.personCurrentSituation.length > 200) {
-      errors.personCurrentSituation = 'Current situation must be 200 characters or fewer'
+    } else if (values.personCurrentSituation.length > 500) {
+      errors.personCurrentSituation = 'Current situation must be 500 characters or fewer'
     }
 
     return
@@ -862,6 +896,10 @@ function storeMentalHealthField(field, values, sessionData) {
     field.conditional.fields.forEach((conditionalField) => {
       if (values[field.name] === field.conditional.value) {
         storeMentalHealthField(conditionalField, values, sessionData)
+      } else if (conditionalField.type === 'contactDetails') {
+        sessionData[conditionalField.name] = []
+        sessionData[conditionalField.emailName] = ''
+        sessionData[conditionalField.phoneName] = ''
       } else if (conditionalField.type === 'checkboxGroup') {
         sessionData[conditionalField.name] = []
       } else {
@@ -930,12 +968,18 @@ function getMentalHealthSummarySections(data) {
     data.personContactPhone && `Phone: ${data.personContactPhone}`
   ], `${mentalHealthBasePath}/contact-person`)
   addMentalHealthSummaryRow(personRows, 'Preferred contact methods', data.preferredContactMethods, `${mentalHealthBasePath}/preferred-contact`)
-  addMentalHealthSummaryRow(personRows, 'Next of kin', `${data.nextOfKinFirstName || ''} ${data.nextOfKinLastName || ''}`.trim(), `${mentalHealthBasePath}/next-of-kin`)
-  addMentalHealthSummaryRow(personRows, 'Next of kin contact methods', [
-    ...(data.nextOfKinContactMethods || []),
-    data.nextOfKinContactEmail && `Email: ${data.nextOfKinContactEmail}`,
-    data.nextOfKinContactPhone && `Phone: ${data.nextOfKinContactPhone}`
-  ], `${mentalHealthBasePath}/next-of-kin-contact`)
+  addMentalHealthSummaryRow(personRows, 'Next of kin details known', data.hasNextOfKinDetails, `${mentalHealthBasePath}/next-of-kin`)
+
+  if (data.hasNextOfKinDetails === 'Yes') {
+    addMentalHealthSummaryRow(personRows, 'Next of kin', `${data.nextOfKinFirstName || ''} ${data.nextOfKinLastName || ''}`.trim(), `${mentalHealthBasePath}/next-of-kin-contact`)
+    addMentalHealthSummaryRow(personRows, 'Next of kin contact methods', [
+      ...(data.nextOfKinContactMethods || []),
+      data.nextOfKinContactEmail && `Email: ${data.nextOfKinContactEmail}`,
+      data.nextOfKinContactPhone && `Phone: ${data.nextOfKinContactPhone}`
+    ], `${mentalHealthBasePath}/next-of-kin-contact`)
+    addMentalHealthSummaryRow(personRows, 'Next of kin relationship', data.nextOfKinRelationship, `${mentalHealthBasePath}/next-of-kin-contact`)
+  }
+
   addMentalHealthSummaryRow(personRows, 'Has an advocate', data.hasAdvocate, `${mentalHealthBasePath}/advocate`)
 
   if (data.hasAdvocate === 'Yes') {
@@ -944,13 +988,13 @@ function getMentalHealthSummarySections(data) {
       ...(data.advocateContactMethods || []),
       data.advocateContactEmail && `Email: ${data.advocateContactEmail}`,
       data.advocateContactPhone && `Phone: ${data.advocateContactPhone}`
-    ], `${mentalHealthBasePath}/advocate-contact`)
+    ], `${mentalHealthBasePath}/advocate-details`)
   }
 
-  addMentalHealthSummaryRow(personRows, 'Mosaic or NHS ID known', data.knowsMosaicOrNhsId, `${mentalHealthBasePath}/identifiers`)
+  addMentalHealthSummaryRow(personRows, 'NHS number known', data.knowsNhsNumber, `${mentalHealthBasePath}/identifiers`)
 
-  if (data.knowsMosaicOrNhsId === 'Yes') {
-    addMentalHealthSummaryRow(personRows, 'Mosaic or NHS ID', data.mosaicOrNhsId, `${mentalHealthBasePath}/identifiers`)
+  if (data.knowsNhsNumber === 'Yes') {
+    addMentalHealthSummaryRow(personRows, 'NHS number', data.nhsNumber, `${mentalHealthBasePath}/identifiers`)
   }
 
   addMentalHealthSummaryRow(personRows, 'Your relationship to them', data.relationshipToPerson, `${mentalHealthBasePath}/relationship`)
@@ -1077,7 +1121,7 @@ router.get('/mental-health-referral/referral-reason/:reasonSlug', (req, res, nex
     action: getReferralReasonFollowUpHref(page),
     pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
     totalPages: mentalHealthTotalPages,
-    sectionTitle: getMentalHealthSectionTitle(24),
+    sectionTitle: getMentalHealthSectionTitle(getMentalHealthPageNumber('reason-for-referral')),
     backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
     nextHref: getReferralReasonFollowUpNextHref(page, req.session.data)
   })
@@ -1104,7 +1148,7 @@ router.post('/mental-health-referral/referral-reason/:reasonSlug', (req, res, ne
       action: getReferralReasonFollowUpHref(page),
       pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
       totalPages: mentalHealthTotalPages,
-      sectionTitle: getMentalHealthSectionTitle(24),
+      sectionTitle: getMentalHealthSectionTitle(getMentalHealthPageNumber('reason-for-referral')),
       backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
       nextHref: getReferralReasonFollowUpNextHref(page, req.session.data),
       errors,
@@ -1121,11 +1165,19 @@ router.post('/mental-health-referral/referral-reason/:reasonSlug', (req, res, ne
   res.redirect(getReferralReasonFollowUpNextHref(page, req.session.data))
 })
 
+router.all('/mental-health-referral/advocate-contact', (req, res) => {
+  res.redirect(`${mentalHealthBasePath}/advocate-details`)
+})
+
 router.get('/mental-health-referral/:slug', (req, res, next) => {
   const page = mentalHealthPageBySlug[req.params.slug]
 
   if (!page) {
     return next()
+  }
+
+  if (page.slug === 'next-of-kin-contact' && req.session.data.hasNextOfKinDetails !== 'Yes') {
+    return res.redirect(`${mentalHealthBasePath}/next-of-kin`)
   }
 
   res.render('mental-health-referral/question', {
@@ -1168,6 +1220,17 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
 
   if (page.slug === 'reason-for-referral') {
     clearUnselectedReferralReasonFollowUps(req.session.data)
+  }
+
+  if (page.slug === 'next-of-kin' && req.session.data.hasNextOfKinDetails === 'No') {
+    Object.assign(req.session.data, {
+      nextOfKinFirstName: '',
+      nextOfKinLastName: '',
+      nextOfKinContactMethods: [],
+      nextOfKinContactEmail: '',
+      nextOfKinContactPhone: '',
+      nextOfKinRelationship: ''
+    })
   }
 
   if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {
