@@ -227,18 +227,36 @@ const mentalHealthPages = [
   },
   {
     slug: 'referral-awareness',
-    title: 'Do they know you’re making this referral?',
+    title: 'Does the person you’re referring consent to this?',
     fields: [
       {
         type: 'radios',
-        name: 'personKnowsReferral',
-        label: 'Do they know you’re making this referral?',
-        error: 'Select whether they know you’re making this referral',
-        items: ['Yes', 'No'],
+        name: 'personConsentsReferral',
+        label: 'Does the person you’re referring consent to this?',
+        error: 'Select whether the person you’re referring consents to this',
+        items: ['Yes', 'No']
+      }
+    ]
+  },
+  {
+    slug: 'consent-not-given',
+    title: 'Why do you not have their consent?',
+    fields: [
+      {
+        type: 'radios',
+        name: 'consentNotGivenReason',
+        label: 'Why do you not have their consent?',
+        error: 'Select why you do not have their consent',
+        items: [
+          'The person finds it difficult to understand and give consent',
+          'The person refused to give consent',
+          'There’s a safeguarding concern',
+          'Other'
+        ],
         conditional: {
-          value: 'No',
+          value: 'Other',
           fields: [
-            { type: 'textarea', name: 'referralNotKnownReason', label: 'Why do they not know you’re making this referral?', error: 'Tell us why they do not know you’re making this referral' }
+            { type: 'textarea', name: 'consentNotGivenOtherDetails', label: 'Tell us why you do not have their consent', error: 'Tell us why you do not have their consent' }
           ]
         }
       }
@@ -480,10 +498,10 @@ const mentalHealthTotalPages = mentalHealthPages.length
 
 const mentalHealthSections = [
   { title: 'Your details', start: 1, end: 2 },
-  { title: 'About the person you’re referring', start: 3, end: 14 },
-  { title: 'Health, communication and care needs', start: 15, end: 17 },
-  { title: 'Safety and risks', start: 18, end: 22 },
-  { title: 'Reason for referral', start: 23, end: 24 }
+  { title: 'About the person you’re referring', start: 3, end: 15 },
+  { title: 'Health, communication and care needs', start: 16, end: 18 },
+  { title: 'Safety and risks', start: 19, end: 23 },
+  { title: 'Reason for referral', start: 24, end: 25 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -496,6 +514,7 @@ const mentalHealthPageBySlug = Object.fromEntries(
   mentalHealthPages.map((page, index) => [page.slug, {
     ...page,
     index,
+    pageNumber: index + 1,
     sectionTitle: getMentalHealthSectionTitle(index + 1)
   }])
 )
@@ -697,6 +716,10 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/advocate-details`
   }
 
+  if (page.slug === 'communication-needs' && data.personConsentsReferral === 'Yes') {
+    return `${mentalHealthBasePath}/referral-awareness`
+  }
+
   if (page.slug === 'current-situation') {
     const selectedFollowUpPages = getSelectedReferralReasonFollowUps(data)
     const lastFollowUpPage = selectedFollowUpPages[selectedFollowUpPages.length - 1]
@@ -722,6 +745,12 @@ function getMentalHealthNextHref(page, data = {}) {
 
   if (page.slug === 'advocate-details') {
     return `${mentalHealthBasePath}/identifiers`
+  }
+
+  if (page.slug === 'referral-awareness') {
+    return data.personConsentsReferral === 'No'
+      ? `${mentalHealthBasePath}/consent-not-given`
+      : `${mentalHealthBasePath}/communication-needs`
   }
 
   if (page.slug === 'reason-for-referral') {
@@ -998,10 +1027,14 @@ function getMentalHealthSummarySections(data) {
   }
 
   addMentalHealthSummaryRow(personRows, 'Your relationship to them', data.relationshipToPerson, `${mentalHealthBasePath}/relationship`)
-  addMentalHealthSummaryRow(personRows, 'They know about the referral', data.personKnowsReferral, `${mentalHealthBasePath}/referral-awareness`)
+  addMentalHealthSummaryRow(personRows, 'They consent to the referral', data.personConsentsReferral, `${mentalHealthBasePath}/referral-awareness`)
 
-  if (data.personKnowsReferral === 'No') {
-    addMentalHealthSummaryRow(personRows, 'Why they do not know', data.referralNotKnownReason, `${mentalHealthBasePath}/referral-awareness`)
+  if (data.personConsentsReferral === 'No') {
+    addMentalHealthSummaryRow(personRows, 'Why consent was not given', data.consentNotGivenReason, `${mentalHealthBasePath}/consent-not-given`)
+
+    if (data.consentNotGivenReason === 'Other') {
+      addMentalHealthSummaryRow(personRows, 'Consent details', data.consentNotGivenOtherDetails, `${mentalHealthBasePath}/consent-not-given`)
+    }
   }
 
   addMentalHealthSummaryRow(needsRows, 'Communication needs', data.hasCommunicationNeeds, `${mentalHealthBasePath}/communication-needs`)
@@ -1180,6 +1213,10 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
     return res.redirect(`${mentalHealthBasePath}/next-of-kin`)
   }
 
+  if (page.slug === 'consent-not-given' && req.session.data.personConsentsReferral !== 'No') {
+    return res.redirect(`${mentalHealthBasePath}/referral-awareness`)
+  }
+
   res.render('mental-health-referral/question', {
     page,
     totalPages: mentalHealthTotalPages,
@@ -1231,6 +1268,15 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
       nextOfKinContactPhone: '',
       nextOfKinRelationship: ''
     })
+  }
+
+  if (page.slug === 'referral-awareness' && req.session.data.personConsentsReferral === 'Yes') {
+    req.session.data.consentNotGivenReason = ''
+    req.session.data.consentNotGivenOtherDetails = ''
+  }
+
+  if (page.slug === 'consent-not-given' && req.session.data.consentNotGivenReason !== 'Other') {
+    req.session.data.consentNotGivenOtherDetails = ''
   }
 
   if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {
