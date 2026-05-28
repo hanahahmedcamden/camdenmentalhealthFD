@@ -64,6 +64,19 @@
   </div>
 {% endmacro %}
 
+{% macro renderFieldset(field, answerData, errors) %}
+  <fieldset class="govuk-fieldset govuk-!-margin-bottom-6">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">{{ field.legend }}</legend>
+    {% if field.hint %}
+      <div class="govuk-hint">{{ field.hint }}</div>
+    {% endif %}
+
+    {% for nestedField in field.fields %}
+      {{ renderField(nestedField, answerData, errors) }}
+    {% endfor %}
+  </fieldset>
+{% endmacro %}
+
 {% macro renderDate(field, answerData, errors) %}
   {% set dayName = field.name ~ "Day" %}
   {% set monthName = field.name ~ "Month" %}
@@ -252,7 +265,9 @@
 {% endmacro %}
 
 {% macro renderField(field, answerData, errors) %}
-  {% if field.type == "text" or field.type == "email" or field.type == "tel" %}
+  {% if field.type == "fieldset" %}
+    {{ renderFieldset(field, answerData, errors) }}
+  {% elif field.type == "text" or field.type == "email" or field.type == "tel" %}
     {{ renderTextField(field, answerData, errors) }}
   {% elif field.type == "textarea" %}
     {{ renderTextarea(field, answerData, errors) }}
@@ -284,6 +299,12 @@
         {{ errorSummary(errorList) }}
 
         <form action="{{ action or '/mental-health-referral/' ~ page.slug }}" method="post" novalidate>
+          {% set repeatableFieldsets = page.repeatableFieldsets %}
+          {% if repeatableFieldsets %}
+            {% set repeatableFieldsetCount = (answerData[repeatableFieldsets.countName] or 1) | int %}
+            <input type="hidden" name="{{ repeatableFieldsets.countName }}" value="{{ repeatableFieldsetCount }}">
+          {% endif %}
+
           {% set visiblePageNumber = pageNumber or page.pageNumber or (page.index + 1) %}
           <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ visiblePageNumber }} of {{ totalPages or 25 }}</p>
           <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ page.title }}</h1>
@@ -292,15 +313,30 @@
           {% endif %}
 
           {% for field in page.fields %}
-            {{ renderField(field, answerData, errors) }}
+            {% if repeatableFieldsets and field.repeatIndex and field.repeatIndex > repeatableFieldsetCount %}
+            {% else %}
+              {{ renderField(field, answerData, errors) }}
+            {% endif %}
           {% endfor %}
 
-          <div class="govuk-button-group">
-            {{ LBCamdenButton({
-              text: "Continue",
-              preventDoubleClick: true
-            }) }}
-          </div>
+          {% if repeatableFieldsets and repeatableFieldsetCount < repeatableFieldsets.max %}
+            <div class="govuk-!-margin-bottom-4">
+              {{ LBCamdenButton({
+                text: repeatableFieldsets.addButtonText,
+                classes: "lbcamden-button--secondary",
+                name: "clinicalProfessionalAction",
+                value: "add",
+                preventDoubleClick: true
+              }) }}
+            </div>
+          {% endif %}
+
+          {{ LBCamdenButton({
+            text: "Continue",
+            name: "clinicalProfessionalAction" if repeatableFieldsets else null,
+            value: "continue" if repeatableFieldsets else null,
+            preventDoubleClick: true
+          }) }}
         </form>
       </div>
     </div>
