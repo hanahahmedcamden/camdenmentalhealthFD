@@ -31,6 +31,7 @@ function normaliseText(value) {
 
 const mentalHealthBasePath = '/mental-health-referral'
 const mentalHealthReturnToCheckAnswersQuery = 'returnTo=check-answers'
+const mentalHealthClinicalProfessionalMax = 5
 
 const mentalHealthPages = [
   {
@@ -278,7 +279,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'communicationNeedsDetails', label: 'Tell us what communication needs they have', labelClasses: 'govuk-hint', error: 'Tell us what communication needs they have' }
+            { type: 'textarea', name: 'communicationNeedsDetails', label: 'Tell us what communication needs they have', error: 'Tell us what communication needs they have' }
           ]
         }
       },
@@ -293,7 +294,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'reasonableAdjustmentsDetails', label: 'Tell us what reasonable adjustments they need', labelClasses: 'govuk-hint', error: 'Tell us what reasonable adjustments they need' }
+            { type: 'textarea', name: 'reasonableAdjustmentsDetails', label: 'Tell us what reasonable adjustments they need', error: 'Tell us what reasonable adjustments they need' }
           ]
         }
       }
@@ -313,7 +314,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'confirmedDiagnosisDetails', label: 'Tell us what mental health conditions with a confirmed diagnosis they have', labelClasses: 'govuk-hint', error: 'Tell us what mental health conditions with a confirmed diagnosis they have' }
+            { type: 'textarea', name: 'confirmedDiagnosisDetails', label: 'Tell us what mental health conditions with a confirmed diagnosis they have', error: 'Tell us what mental health conditions with a confirmed diagnosis they have' }
           ]
         }
       },
@@ -327,7 +328,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'textarea', name: 'suspectedConditionsDetails', label: 'Tell us what suspected mental health conditions they have', labelClasses: 'govuk-hint', error: 'Tell us what suspected mental health conditions they have' }
+            { type: 'textarea', name: 'suspectedConditionsDetails', label: 'Tell us what suspected mental health conditions they have', error: 'Tell us what suspected mental health conditions they have' }
           ]
         }
       }
@@ -352,7 +353,7 @@ const mentalHealthPages = [
     hint: 'Tell us their details, if you know them.',
     repeatableFieldsets: {
       countName: 'clinicalProfessionalCount',
-      max: 3,
+      max: mentalHealthClinicalProfessionalMax,
       addButtonText: 'Add another clinical professional'
     },
     fields: [
@@ -360,6 +361,7 @@ const mentalHealthPages = [
         type: 'fieldset',
         repeatIndex: 1,
         legend: 'Clinical professional',
+        optional: true,
         fields: [
           { type: 'text', name: 'clinicalProfessional1FirstName', label: 'First name', error: 'Enter the clinical professional’s first name', autocomplete: 'given-name' },
           { type: 'text', name: 'clinicalProfessional1LastName', label: 'Last name', error: 'Enter the clinical professional’s last name', autocomplete: 'family-name' },
@@ -390,6 +392,30 @@ const mentalHealthPages = [
           { type: 'text', name: 'clinicalProfessional3JobTitle', label: 'Job title', error: 'Enter the clinical professional’s job title', autocomplete: 'organization-title' },
           { type: 'text', name: 'clinicalProfessional3Organisation', label: 'Organisation or team', error: 'Enter the clinical professional’s organisation or team', autocomplete: 'organization' }
         ]
+      },
+      {
+        type: 'fieldset',
+        repeatIndex: 4,
+        legend: 'Clinical professional',
+        optional: true,
+        fields: [
+          { type: 'text', name: 'clinicalProfessional4FirstName', label: 'First name', error: 'Enter the clinical professional’s first name', autocomplete: 'given-name' },
+          { type: 'text', name: 'clinicalProfessional4LastName', label: 'Last name', error: 'Enter the clinical professional’s last name', autocomplete: 'family-name' },
+          { type: 'text', name: 'clinicalProfessional4JobTitle', label: 'Job title', error: 'Enter the clinical professional’s job title', autocomplete: 'organization-title' },
+          { type: 'text', name: 'clinicalProfessional4Organisation', label: 'Organisation or team', error: 'Enter the clinical professional’s organisation or team', autocomplete: 'organization' }
+        ]
+      },
+      {
+        type: 'fieldset',
+        repeatIndex: 5,
+        legend: 'Clinical professional',
+        optional: true,
+        fields: [
+          { type: 'text', name: 'clinicalProfessional5FirstName', label: 'First name', error: 'Enter the clinical professional’s first name', autocomplete: 'given-name' },
+          { type: 'text', name: 'clinicalProfessional5LastName', label: 'Last name', error: 'Enter the clinical professional’s last name', autocomplete: 'family-name' },
+          { type: 'text', name: 'clinicalProfessional5JobTitle', label: 'Job title', error: 'Enter the clinical professional’s job title', autocomplete: 'organization-title' },
+          { type: 'text', name: 'clinicalProfessional5Organisation', label: 'Organisation or team', error: 'Enter the clinical professional’s organisation or team', autocomplete: 'organization' }
+        ]
       }
     ]
   },
@@ -412,14 +438,15 @@ const mentalHealthPages = [
     hintHtml: 'If you’re worried about a child or young person, <a class="govuk-link" href="https://www.camden.gov.uk/are-you-worried-about-a-child">find ways to report a vulnerable child or child abuse</a>.',
     fields: [
       {
-        type: 'textarea',
+        type: 'select',
         name: 'childrenCount',
         label: 'How many children live with them?',
         labelClasses: 'govuk-label--m',
+        items: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
         error: 'Tell us how many children live with them'
       },
       {
-        type: 'textarea',
+        type: 'text',
         name: 'childrenAgeRange',
         label: 'What is the age range of children who live with them?',
         labelClasses: 'govuk-label--m',
@@ -468,9 +495,8 @@ const mentalHealthPages = [
             {
               type: 'textarea',
               name: 'currentRisksOtherDetails',
-              label: 'Tell us about the other current risks',
-              labelClasses: 'govuk-visually-hidden',
-              error: 'Tell us about the other current risks'
+              label: 'Tell us what other current risks they have',
+              error: 'Tell us what other current risks they have'
             }
           ]
         }
@@ -508,26 +534,23 @@ const mentalHealthPages = [
         hint: 'Select all that apply',
         error: 'Select why you’re making this referral',
         items: [
-          'Safeguarding Concern (Section 42)',
-          'New Care Act 2014 Assessment',
-          'Deep Clean / Environmental Health',
-          'Supported Housing / Care Home Request',
-          'Carer Support / Assessment',
-          'Review of Existing Package of Care',
-          'Voluntary Sector / Signposting (Befriending, Advocacy, etc)'
+          'Social care and support needs assessment',
+          'Review of existing package of care',
+          'Deep clean or environmental health',
+          'Carer support or assessment'
         ]
       }
     ]
   },
   {
     slug: 'contact-before-person',
-    title: 'Do you want us to contact you before the person you’ve referred?',
+    title: "Do you want us to contact you before the person you're referring?",
     fields: [
       {
         type: 'radios',
         name: 'contactBeforePerson',
-        label: 'Do you want us to contact you before the person you’ve referred?',
-        error: 'Select whether you want us to contact you before the person you’ve referred',
+        label: "Do you want us to contact you before the person you're referring?",
+        error: "Select whether you want us to contact you before the person you're referring",
         items: ['Yes, contact me first', 'No, contact them first']
       }
     ]
@@ -567,107 +590,66 @@ function getMentalHealthPageNumber(slug) {
 
 const referralReasonFollowUpPages = [
   {
-    reason: 'Safeguarding Concern (Section 42)',
-    slug: 'safeguarding-concern-section-42',
-    title: 'Safeguarding Concern (Section 42)',
-    fields: [
-      {
-        type: 'textarea',
-        name: 'safeguardingConcernDetails',
-        label: 'Safeguarding Concern (Section 42)',
-        hint: 'Describe the alleged abuse/neglect, who is involved, what are the immediate risks, and what immediate safety actions have been taken so far',
-        error: 'Enter details about the safeguarding concern'
-      }
-    ]
-  },
-  {
-    reason: 'New Care Act 2014 Assessment',
-    slug: 'new-care-act-2014-assessment',
-    title: 'New Care Act 2014 Assessment',
+    reason: 'Social care and support needs assessment',
+    slug: 'social-care-and-support-needs-assessment',
+    title: 'Social care and support needs assessment',
     fields: [
       {
         type: 'textarea',
         name: 'careActAssessmentDetails',
-        label: 'New Care Act 2014 Assessment',
-        hint: "What are the person's primary needs for daily living?",
+        label: "What are the person's primary needs for daily living?",
         error: 'Enter the person’s primary needs for daily living'
       }
     ]
   },
   {
-    reason: 'Deep Clean / Environmental Health',
+    reason: 'Review of existing package of care',
+    slug: 'review-of-existing-package-of-care',
+    title: 'Tell us what has changed the last assessment',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'packageReviewDetails',
+        label: 'We need to understand why a review is needed',
+        error: 'Enter what has changed since the last assessment'
+      }
+    ]
+  },
+  {
+    reason: 'Deep clean or environmental health',
     slug: 'deep-clean-or-environmental-health',
-    title: 'Deep Clean / Environmental Health',
+    title: 'Deep clean or environmental health',
     fields: [
       {
         type: 'textarea',
         name: 'deepCleanHoardingDetails',
         label: 'Is there hoarding involved?',
-        hint: '(Describe level/scale).',
+        labelClasses: 'govuk-label--m',
+        hint: 'If there is, describe the level or scale',
         error: 'Tell us if there is hoarding involved'
       },
       {
         type: 'textarea',
         name: 'deepCleanFireSafetyDetails',
         label: 'Are there risks to health/fire safety?',
+        labelClasses: 'govuk-label--m',
         error: 'Tell us if there are risks to health/fire safety'
       }
     ]
   },
   {
-    reason: 'Supported Housing / Care Home Request',
-    slug: 'supported-housing-or-care-home-request',
-    title: 'Supported Housing / Care Home Request',
-    fields: [
-      {
-        type: 'textarea',
-        name: 'supportedHousingDetails',
-        label: 'Supported Housing / Care Home Request',
-        hint: 'Why is the current accommodation no longer suitable? Include required support hours.',
-        error: 'Enter why the current accommodation is no longer suitable'
-      }
-    ]
-  },
-  {
-    reason: 'Carer Support / Assessment',
+    reason: 'Carer support or assessment',
     slug: 'carer-support-or-assessment',
-    title: 'Carer Support / Assessment',
+    title: 'Carer support or assessment',
     fields: [
-      { type: 'text', name: 'carerName', label: 'Carer’s Name', error: 'Enter the carer’s name' },
-      { type: 'text', name: 'carerRelationship', label: 'Relationship', error: 'Enter the carer’s relationship' },
+      { type: 'text', name: 'carerName', label: 'Carer’s name', labelClasses: 'govuk-label--m', error: 'Enter the carer’s name' },
+      { type: 'text', name: 'carerRelationship', label: 'Relationship', labelClasses: 'govuk-label--m', error: 'Enter the carer’s relationship' },
       {
         type: 'textarea',
         name: 'carerImpactDetails',
         label: 'What is the current impact of the caring role?',
+        labelClasses: 'govuk-label--m',
         error: 'Enter the current impact of the caring role'
-      }
-    ]
-  },
-  {
-    reason: 'Review of Existing Package of Care',
-    slug: 'review-of-existing-package-of-care',
-    title: 'Review of Existing Package of Care',
-    fields: [
-      {
-        type: 'textarea',
-        name: 'packageReviewDetails',
-        label: 'Review of Existing Package of Care',
-        hint: 'What has changed since the last assessment that necessitates a review?',
-        error: 'Enter what has changed since the last assessment'
-      }
-    ]
-  },
-  {
-    reason: 'Voluntary Sector / Signposting (Befriending, Advocacy, etc)',
-    slug: 'voluntary-sector-or-signposting',
-    title: 'Voluntary Sector / Signposting (Befriending, Advocacy, etc)',
-    fields: [
-      {
-        type: 'textarea',
-        name: 'voluntarySectorDetails',
-        label: 'Voluntary Sector / Signposting (Befriending, Advocacy, etc)',
-        hint: 'What specific community links are required?',
-        error: 'Enter what specific community links are required'
       }
     ]
   }
@@ -781,13 +763,13 @@ function getClinicalProfessionalCount(data = {}) {
     return 1
   }
 
-  return Math.min(count, 3)
+  return Math.min(count, mentalHealthClinicalProfessionalMax)
 }
 
 function clearClinicalProfessionalAnswers(data, startIndex = 1) {
   data.clinicalProfessionalsDetails = ''
 
-  for (let index = startIndex; index <= 3; index += 1) {
+  for (let index = startIndex; index <= mentalHealthClinicalProfessionalMax; index += 1) {
     getClinicalProfessionalFieldNames(index).forEach((fieldName) => {
       data[fieldName] = ''
     })
@@ -813,7 +795,7 @@ function hasClinicalProfessionalSummary(index, data) {
 function getClinicalProfessionalCompletedCount(data = {}) {
   let count = 1
 
-  for (let index = 2; index <= 3; index += 1) {
+  for (let index = 2; index <= mentalHealthClinicalProfessionalMax; index += 1) {
     if (hasClinicalProfessionalSummary(index, data)) {
       count = index
     }
@@ -1195,6 +1177,7 @@ function getMentalHealthSummarySections(data) {
   const needsRows = addMentalHealthSummarySection(sections, 'Health, communication and care needs')
   const safetyRows = addMentalHealthSummarySection(sections, 'Safety and risks')
   const reasonRows = addMentalHealthSummarySection(sections, 'Reason for referral')
+  const firstContactRows = addMentalHealthSummarySection(sections, 'First contact')
 
   addMentalHealthSummaryRow(yourDetailsRows, 'Your name', `${data.referrerFirstName || ''} ${data.referrerLastName || ''}`.trim(), `${mentalHealthBasePath}/your-details`)
   addMentalHealthSummaryRow(yourDetailsRows, 'Job title', data.referrerJobTitle, `${mentalHealthBasePath}/your-details`)
@@ -1287,14 +1270,10 @@ function getMentalHealthSummarySections(data) {
   addMentalHealthSummaryRow(needsRows, 'Clinical professionals involved', data.clinicalProfessionalsInvolved, `${mentalHealthBasePath}/clinical-professionals`)
 
   if (data.clinicalProfessionalsInvolved === 'Yes') {
-    addMentalHealthSummaryRow(needsRows, 'Clinical professional', getClinicalProfessionalSummary(1, data), `${mentalHealthBasePath}/clinical-professional-details`)
-
-    if (hasClinicalProfessionalSummary(2, data)) {
-      addMentalHealthSummaryRow(needsRows, 'Clinical professional', getClinicalProfessionalSummary(2, data), `${mentalHealthBasePath}/clinical-professional-details`)
-    }
-
-    if (hasClinicalProfessionalSummary(3, data)) {
-      addMentalHealthSummaryRow(needsRows, 'Clinical professional', getClinicalProfessionalSummary(3, data), `${mentalHealthBasePath}/clinical-professional-details`)
+    for (let index = 1; index <= mentalHealthClinicalProfessionalMax; index += 1) {
+      if (index === 1 || hasClinicalProfessionalSummary(index, data)) {
+        addMentalHealthSummaryRow(needsRows, 'Clinical professional', getClinicalProfessionalSummary(index, data), `${mentalHealthBasePath}/clinical-professional-details`)
+      }
     }
   }
 
@@ -1324,7 +1303,7 @@ function getMentalHealthSummarySections(data) {
     addMentalHealthSummaryRow(reasonRows, page.title, getReferralReasonFollowUpSummaryValues(page, data), getReferralReasonFollowUpHref(page))
   })
 
-  addMentalHealthSummaryRow(reasonRows, 'Who to contact first', data.contactBeforePerson, `${mentalHealthBasePath}/contact-before-person`)
+  addMentalHealthSummaryRow(firstContactRows, 'Who to contact first', data.contactBeforePerson, `${mentalHealthBasePath}/contact-before-person`)
 
   return sections
 }
@@ -1511,7 +1490,7 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
 
   if (page.slug === 'clinical-professional-details' && req.body.clinicalProfessionalAction === 'add') {
     storeMentalHealthPageAnswers(page, values, req.session.data)
-    req.session.data.clinicalProfessionalCount = Math.min(getClinicalProfessionalCount(values) + 1, 3)
+    req.session.data.clinicalProfessionalCount = Math.min(getClinicalProfessionalCount(values) + 1, mentalHealthClinicalProfessionalMax)
     clearClinicalProfessionalAnswers(req.session.data, req.session.data.clinicalProfessionalCount + 1)
 
     return res.redirect(`${mentalHealthBasePath}/clinical-professional-details`)
