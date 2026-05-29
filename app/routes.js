@@ -508,13 +508,13 @@ const mentalHealthPages = [
         hint: 'Select all that apply',
         error: 'Select why you’re making this referral',
         items: [
-          'Safeguarding concern (Section 42)',
+          'Safeguarding Concern (Section 42)',
           'New Care Act 2014 Assessment',
-          'Deep clean or environmental health',
-          'Supported housing or care home request',
-          'Carer support or assessment',
-          'Review of existing package of care',
-          'Voluntary sector or signposting (such as befriending, advocacy)'
+          'Deep Clean / Environmental Health',
+          'Supported Housing / Care Home Request',
+          'Carer Support / Assessment',
+          'Review of Existing Package of Care',
+          'Voluntary Sector / Signposting (Befriending, Advocacy, etc)'
         ]
       }
     ]
@@ -567,15 +567,15 @@ function getMentalHealthPageNumber(slug) {
 
 const referralReasonFollowUpPages = [
   {
-    reason: 'Safeguarding concern (Section 42)',
+    reason: 'Safeguarding Concern (Section 42)',
     slug: 'safeguarding-concern-section-42',
-    title: 'Safeguarding concern (Section 42)',
+    title: 'Safeguarding Concern (Section 42)',
     fields: [
       {
         type: 'textarea',
         name: 'safeguardingConcernDetails',
-        label: 'Safeguarding concern (Section 42)',
-        hint: 'Describe the alleged abuse or neglect, who is involved, what are the immediate risks, and what immediate safety actions have been taken so far',
+        label: 'Safeguarding Concern (Section 42)',
+        hint: 'Describe the alleged abuse/neglect, who is involved, what are the immediate risks, and what immediate safety actions have been taken so far',
         error: 'Enter details about the safeguarding concern'
       }
     ]
@@ -589,52 +589,52 @@ const referralReasonFollowUpPages = [
         type: 'textarea',
         name: 'careActAssessmentDetails',
         label: 'New Care Act 2014 Assessment',
-        hint: 'What are the person’s primary needs for daily living?',
+        hint: "What are the person's primary needs for daily living?",
         error: 'Enter the person’s primary needs for daily living'
       }
     ]
   },
   {
-    reason: 'Deep clean or environmental health',
+    reason: 'Deep Clean / Environmental Health',
     slug: 'deep-clean-or-environmental-health',
-    title: 'Deep clean or environmental health',
+    title: 'Deep Clean / Environmental Health',
     fields: [
       {
         type: 'textarea',
         name: 'deepCleanHoardingDetails',
         label: 'Is there hoarding involved?',
-        hint: 'Describe the level or scale',
+        hint: '(Describe level/scale).',
         error: 'Tell us if there is hoarding involved'
       },
       {
         type: 'textarea',
         name: 'deepCleanFireSafetyDetails',
-        label: 'Are there risks to health or fire safety?',
-        error: 'Tell us if there are risks to health or fire safety'
+        label: 'Are there risks to health/fire safety?',
+        error: 'Tell us if there are risks to health/fire safety'
       }
     ]
   },
   {
-    reason: 'Supported housing or care home request',
+    reason: 'Supported Housing / Care Home Request',
     slug: 'supported-housing-or-care-home-request',
-    title: 'Supported housing or care home request',
+    title: 'Supported Housing / Care Home Request',
     fields: [
       {
         type: 'textarea',
         name: 'supportedHousingDetails',
-        label: 'Supported housing or care home request',
+        label: 'Supported Housing / Care Home Request',
         hint: 'Why is the current accommodation no longer suitable? Include required support hours.',
         error: 'Enter why the current accommodation is no longer suitable'
       }
     ]
   },
   {
-    reason: 'Carer support or assessment',
+    reason: 'Carer Support / Assessment',
     slug: 'carer-support-or-assessment',
-    title: 'Carer support or assessment',
+    title: 'Carer Support / Assessment',
     fields: [
-      { type: 'text', name: 'carerName', label: 'Carer’s name', error: 'Enter the carer’s name' },
-      { type: 'text', name: 'carerRelationship', label: 'Carer’s relationship to the person', error: 'Enter the carer’s relationship to the person' },
+      { type: 'text', name: 'carerName', label: 'Carer’s Name', error: 'Enter the carer’s name' },
+      { type: 'text', name: 'carerRelationship', label: 'Relationship', error: 'Enter the carer’s relationship' },
       {
         type: 'textarea',
         name: 'carerImpactDetails',
@@ -644,28 +644,28 @@ const referralReasonFollowUpPages = [
     ]
   },
   {
-    reason: 'Review of existing package of care',
+    reason: 'Review of Existing Package of Care',
     slug: 'review-of-existing-package-of-care',
-    title: 'Review of existing package of care',
+    title: 'Review of Existing Package of Care',
     fields: [
       {
         type: 'textarea',
         name: 'packageReviewDetails',
-        label: 'Review of existing package of care',
+        label: 'Review of Existing Package of Care',
         hint: 'What has changed since the last assessment that necessitates a review?',
         error: 'Enter what has changed since the last assessment'
       }
     ]
   },
   {
-    reason: 'Voluntary sector or signposting (such as befriending, advocacy)',
+    reason: 'Voluntary Sector / Signposting (Befriending, Advocacy, etc)',
     slug: 'voluntary-sector-or-signposting',
-    title: 'Voluntary sector or signposting (such as befriending, advocacy)',
+    title: 'Voluntary Sector / Signposting (Befriending, Advocacy, etc)',
     fields: [
       {
         type: 'textarea',
         name: 'voluntarySectorDetails',
-        label: 'Voluntary sector or signposting (such as befriending, advocacy)',
+        label: 'Voluntary Sector / Signposting (Befriending, Advocacy, etc)',
         hint: 'What specific community links are required?',
         error: 'Enter what specific community links are required'
       }
