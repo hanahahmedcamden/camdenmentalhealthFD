@@ -137,10 +137,26 @@
       <div class="govuk-checkboxes" data-module="govuk-checkboxes">
         {% for item in field.items %}
           {% set itemId = field.name if loop.first else field.name ~ "-" ~ loop.index %}
+          {% set conditionalId = "conditional-" ~ field.name ~ "-" ~ loop.index %}
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="{{ itemId }}" name="{{ field.name }}" type="checkbox" value="{{ item }}" {% if answerData[field.name] and item in answerData[field.name] %}checked{% endif %}>
+            <input
+              class="govuk-checkboxes__input"
+              id="{{ itemId }}"
+              name="{{ field.name }}"
+              type="checkbox"
+              value="{{ item }}"
+              {% if field.conditional and item == field.conditional.value %}data-aria-controls="{{ conditionalId }}"{% endif %}
+              {% if answerData[field.name] and item in answerData[field.name] %}checked{% endif %}
+            >
             <label class="govuk-label govuk-checkboxes__label" for="{{ itemId }}">{{ item }}</label>
           </div>
+          {% if field.conditional and item == field.conditional.value %}
+            <div class="govuk-checkboxes__conditional{% if not (answerData[field.name] and item in answerData[field.name]) %} govuk-checkboxes__conditional--hidden{% endif %}" id="{{ conditionalId }}">
+              {% for conditionalField in field.conditional.fields %}
+                {{ renderField(conditionalField, answerData, errors) }}
+              {% endfor %}
+            </div>
+          {% endif %}
         {% endfor %}
       </div>
     </fieldset>
@@ -310,7 +326,9 @@
           {% set visiblePageNumber = pageNumber or page.pageNumber or (page.index + 1) %}
           <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ visiblePageNumber }} of {{ totalPages or 25 }}</p>
           <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ page.title }}</h1>
-          {% if page.hint %}
+          {% if page.hintHtml %}
+            <div class="govuk-hint">{{ page.hintHtml | safe }}</div>
+          {% elif page.hint %}
             <div class="govuk-hint">{{ page.hint }}</div>
           {% endif %}
 

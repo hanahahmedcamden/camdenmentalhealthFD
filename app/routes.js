@@ -408,7 +408,7 @@ const mentalHealthPages = [
   {
     slug: 'children-details',
     title: 'Details of the children who live with them',
-    hint: 'If you’re worried about a child or young person, find ways to report a vulnerable child or child abuse.',
+    hintHtml: 'If you’re worried about a child or young person, <a class="govuk-link" href="https://www.camden.gov.uk/are-you-worried-about-a-child">find ways to report a vulnerable child or child abuse</a>.',
     fields: [
       {
         type: 'textarea',
@@ -424,25 +424,6 @@ const mentalHealthPages = [
         labelClasses: 'govuk-label--m',
         hint: 'For example, 8 to 12',
         error: 'Tell us the age range of children who live with them'
-      }
-    ]
-  },
-  {
-    slug: 'pets',
-    title: 'Do they live with any pets?',
-    fields: [
-      {
-        type: 'radios',
-        name: 'livesWithPets',
-        label: 'Do they live with any pets?',
-        error: 'Select whether they live with any pets',
-        items: ['Yes', 'No'],
-        conditional: {
-          value: 'Yes',
-          fields: [
-            { type: 'textarea', name: 'petsDetails', label: 'Tell us what pets they live with', error: 'Tell us what pets they live with' }
-          ]
-        }
       }
     ]
   },
@@ -479,7 +460,19 @@ const mentalHealthPages = [
           'Risk to others',
           'Other',
           'None of these'
-        ]
+        ],
+        conditional: {
+          value: 'Other',
+          fields: [
+            {
+              type: 'textarea',
+              name: 'currentRisksOtherDetails',
+              label: 'Tell us about the other current risks',
+              labelClasses: 'govuk-visually-hidden',
+              error: 'Tell us about the other current risks'
+            }
+          ]
+        }
       }
     ]
   },
@@ -491,7 +484,7 @@ const mentalHealthPages = [
         type: 'radios',
         name: 'hasEnvironmentalRisks',
         label: 'Are there any environmental risks?',
-        hint: 'For example, needle finds, evidence of cuckooing, aggressive dogs',
+        hint: 'For example, needle finds, evidence of cuckooing, pets',
         error: 'Select whether there are any environmental risks',
         items: ['Yes', 'No'],
         conditional: {
@@ -551,8 +544,8 @@ const mentalHealthSections = [
   { title: 'Your details', start: 1, end: 3 },
   { title: 'About the person you’re referring', start: 4, end: 15 },
   { title: 'Health, communication and care needs', start: 16, end: 19 },
-  { title: 'Safety and risks', start: 20, end: 25 },
-  { title: 'Reason for referral', start: 26, end: 27 }
+  { title: 'Safety and risks', start: 20, end: 24 },
+  { title: 'Reason for referral', start: 25, end: 26 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -836,7 +829,7 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/clinical-professional-details`
   }
 
-  if (page.slug === 'pets' && data.livesWithChildren === 'No') {
+  if (page.slug === 'violence-or-aggression' && data.livesWithChildren === 'No') {
     return `${mentalHealthBasePath}/children`
   }
 
@@ -886,11 +879,11 @@ function getMentalHealthNextHref(page, data = {}) {
   if (page.slug === 'children') {
     return data.livesWithChildren === 'Yes'
       ? `${mentalHealthBasePath}/children-details`
-      : `${mentalHealthBasePath}/pets`
+      : `${mentalHealthBasePath}/violence-or-aggression`
   }
 
   if (page.slug === 'children-details') {
-    return `${mentalHealthBasePath}/pets`
+    return `${mentalHealthBasePath}/violence-or-aggression`
   }
 
   if (page.slug === 'reason-for-referral') {
@@ -923,6 +916,13 @@ function normaliseMentalHealthField(field, body, values) {
 
   if (field.type === 'checkboxGroup') {
     values[field.name] = asArray(body[field.name])
+
+    if (field.conditional) {
+      field.conditional.fields.forEach((conditionalField) => {
+        normaliseMentalHealthField(conditionalField, body, values)
+      })
+    }
+
     return
   }
 
@@ -1004,6 +1004,10 @@ function validateMentalHealthField(field, values, errors) {
       errors[field.name] = field.error
     } else if (field.exclusive && values[field.name].includes(field.exclusive) && values[field.name].length > 1) {
       errors[field.name] = field.exclusiveError
+    } else if (field.conditional && values[field.name].includes(field.conditional.value)) {
+      field.conditional.fields.forEach((conditionalField) => {
+        validateMentalHealthField(conditionalField, values, errors)
+      })
     }
 
     return
@@ -1075,6 +1079,23 @@ function storeMentalHealthField(field, values, sessionData) {
 
   if (field.type === 'checkboxGroup') {
     sessionData[field.name] = values[field.name] || []
+
+    if (field.conditional) {
+      field.conditional.fields.forEach((conditionalField) => {
+        if (sessionData[field.name].includes(field.conditional.value)) {
+          storeMentalHealthField(conditionalField, values, sessionData)
+        } else if (conditionalField.type === 'contactDetails') {
+          sessionData[conditionalField.name] = []
+          sessionData[conditionalField.emailName] = ''
+          sessionData[conditionalField.phoneName] = ''
+        } else if (conditionalField.type === 'checkboxGroup') {
+          sessionData[conditionalField.name] = []
+        } else {
+          sessionData[conditionalField.name] = ''
+        }
+      })
+    }
+
     return
   }
 
@@ -1264,14 +1285,13 @@ function getMentalHealthSummarySections(data) {
     addMentalHealthSummaryRow(safetyRows, 'Age range of children', data.childrenAgeRange, `${mentalHealthBasePath}/children-details`)
   }
 
-  addMentalHealthSummaryRow(safetyRows, 'Lives with pets', data.livesWithPets, `${mentalHealthBasePath}/pets`)
-
-  if (data.livesWithPets === 'Yes') {
-    addMentalHealthSummaryRow(safetyRows, 'Pets details', data.petsDetails, `${mentalHealthBasePath}/pets`)
-  }
-
   addMentalHealthSummaryRow(safetyRows, 'History of violence or aggression', data.historyOfViolenceOrAggression, `${mentalHealthBasePath}/violence-or-aggression`)
   addMentalHealthSummaryRow(safetyRows, 'Current risks', data.currentRisks, `${mentalHealthBasePath}/current-risks`)
+
+  if (data.currentRisks && data.currentRisks.includes('Other')) {
+    addMentalHealthSummaryRow(safetyRows, 'Other current risks', data.currentRisksOtherDetails, `${mentalHealthBasePath}/current-risks`)
+  }
+
   addMentalHealthSummaryRow(safetyRows, 'Environmental risks', data.hasEnvironmentalRisks, `${mentalHealthBasePath}/environmental-risks`)
 
   if (data.hasEnvironmentalRisks === 'Yes') {
@@ -1511,6 +1531,11 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
     req.session.data.childrenCount = ''
     req.session.data.childrenAgeRange = ''
     req.session.data.childrenDetails = ''
+  }
+
+  if (page.slug === 'children') {
+    req.session.data.livesWithPets = ''
+    req.session.data.petsDetails = ''
   }
 
   if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {
