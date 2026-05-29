@@ -30,6 +30,7 @@ function normaliseText(value) {
 }
 
 const mentalHealthBasePath = '/mental-health-referral'
+const mentalHealthReturnToCheckAnswersQuery = 'returnTo=check-answers'
 
 const mentalHealthPages = [
   {
@@ -519,33 +520,30 @@ const mentalHealthPages = [
     ]
   },
   {
-    slug: 'current-situation',
-    title: 'Current situation and requested actions',
+    slug: 'contact-before-person',
+    title: 'Do you want us to contact you before the person you’ve referred?',
     fields: [
       {
-        type: 'textarea',
-        name: 'currentSituationSummary',
-        label: 'Tell us a summary of the person’s current situation, including your reason for making this referral now',
-        error: 'Tell us a summary of the person’s current situation'
-      },
-      {
-        type: 'textarea',
-        name: 'requestedActions',
-        label: 'Tell us what actions you want us to take',
-        error: 'Tell us what actions you want us to take'
+        type: 'radios',
+        name: 'contactBeforePerson',
+        label: 'Do you want us to contact you before the person you’ve referred?',
+        error: 'Select whether you want us to contact you before the person you’ve referred',
+        items: ['Yes, contact me first', 'No, contact them first']
       }
     ]
   }
 ]
 
-const mentalHealthTotalPages = mentalHealthPages.length
+const mentalHealthStartPageCount = 1
+const mentalHealthEndPageCount = 4
+const mentalHealthTotalPages = mentalHealthStartPageCount + mentalHealthPages.length + mentalHealthEndPageCount
 
 const mentalHealthSections = [
-  { title: 'Your details', start: 1, end: 3 },
-  { title: 'About the person you’re referring', start: 4, end: 15 },
-  { title: 'Health, communication and care needs', start: 16, end: 19 },
-  { title: 'Safety and risks', start: 20, end: 24 },
-  { title: 'Reason for referral', start: 25, end: 26 }
+  { title: 'Your details', start: 2, end: 4 },
+  { title: 'About the person you’re referring', start: 5, end: 16 },
+  { title: 'Health, communication and care needs', start: 17, end: 20 },
+  { title: 'Safety and risks', start: 21, end: 25 },
+  { title: 'Reason for referral', start: 26, end: 27 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -558,13 +556,13 @@ const mentalHealthPageBySlug = Object.fromEntries(
   mentalHealthPages.map((page, index) => [page.slug, {
     ...page,
     index,
-    pageNumber: index + 1,
-    sectionTitle: getMentalHealthSectionTitle(index + 1)
+    pageNumber: index + mentalHealthStartPageCount + 1,
+    sectionTitle: getMentalHealthSectionTitle(index + mentalHealthStartPageCount + 1)
   }])
 )
 
 function getMentalHealthPageNumber(slug) {
-  return mentalHealthPageBySlug[slug].index + 1
+  return mentalHealthPageBySlug[slug].pageNumber
 }
 
 const referralReasonFollowUpPages = [
@@ -705,7 +703,31 @@ function getReferralReasonFollowUpNextHref(page, data) {
   const pageIndex = selectedPages.findIndex((selectedPage) => selectedPage.slug === page.slug)
   const nextPage = selectedPages[pageIndex + 1]
 
-  return nextPage ? getReferralReasonFollowUpHref(nextPage) : `${mentalHealthBasePath}/current-situation`
+  return nextPage ? getReferralReasonFollowUpHref(nextPage) : `${mentalHealthBasePath}/contact-before-person`
+}
+
+function getMentalHealthCheckAnswersBackHref(data = {}) {
+  return `${mentalHealthBasePath}/contact-before-person`
+}
+
+function getMentalHealthChangeHref(href) {
+  const separator = href.includes('?') ? '&' : '?'
+
+  return `${href}${separator}${mentalHealthReturnToCheckAnswersQuery}`
+}
+
+function setMentalHealthReturnToCheckAnswers(req) {
+  if (req.query && req.query.returnTo === 'check-answers') {
+    req.session.returnToMentalHealthCheckAnswers = true
+  }
+}
+
+function shouldReturnToMentalHealthCheckAnswers(req) {
+  return req.session.returnToMentalHealthCheckAnswers === true
+}
+
+function clearMentalHealthReturnToCheckAnswers(req) {
+  delete req.session.returnToMentalHealthCheckAnswers
 }
 
 function getReferralReasonFollowUpPageNumber(page, data) {
@@ -802,7 +824,7 @@ function getClinicalProfessionalCompletedCount(data = {}) {
 
 function getMentalHealthBackHref(page, data = {}) {
   if (!page.index) {
-    return `${mentalHealthBasePath}/start`
+    return `${mentalHealthBasePath}/start-referral`
   }
 
   if (page.slug === 'advocate' && data.hasNextOfKinDetails === 'No') {
@@ -833,13 +855,11 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/children`
   }
 
-  if (page.slug === 'current-situation') {
+  if (page.slug === 'contact-before-person') {
     const selectedFollowUpPages = getSelectedReferralReasonFollowUps(data)
     const lastFollowUpPage = selectedFollowUpPages[selectedFollowUpPages.length - 1]
 
-    if (lastFollowUpPage) {
-      return getReferralReasonFollowUpHref(lastFollowUpPage)
-    }
+    return lastFollowUpPage ? getReferralReasonFollowUpHref(lastFollowUpPage) : `${mentalHealthBasePath}/reason-for-referral`
   }
 
   return `${mentalHealthBasePath}/${mentalHealthPages[page.index - 1].slug}`
@@ -1153,7 +1173,7 @@ function addMentalHealthSummaryRow(rows, key, value, href) {
   rows.push({
     key,
     values: values.length ? values : ['Not provided'],
-    href
+    href: getMentalHealthChangeHref(href)
   })
 }
 
@@ -1304,8 +1324,7 @@ function getMentalHealthSummarySections(data) {
     addMentalHealthSummaryRow(reasonRows, page.title, getReferralReasonFollowUpSummaryValues(page, data), getReferralReasonFollowUpHref(page))
   })
 
-  addMentalHealthSummaryRow(reasonRows, 'Current situation summary', data.currentSituationSummary, `${mentalHealthBasePath}/current-situation`)
-  addMentalHealthSummaryRow(reasonRows, 'Actions requested', data.requestedActions, `${mentalHealthBasePath}/current-situation`)
+  addMentalHealthSummaryRow(reasonRows, 'Who to contact first', data.contactBeforePerson, `${mentalHealthBasePath}/contact-before-person`)
 
   return sections
 }
@@ -1322,9 +1341,20 @@ router.get('/mental-health-referral/start', (req, res) => {
   res.render('mental-health-referral/start')
 })
 
+router.get('/mental-health-referral/start-referral', (req, res) => {
+  res.render('mental-health-referral/start-referral', {
+    totalPages: mentalHealthTotalPages
+  })
+})
+
 router.get('/mental-health-referral/check-answers', (req, res) => {
+  clearMentalHealthReturnToCheckAnswers(req)
+  delete req.session.data.currentSituationSummary
+  delete req.session.data.requestedActions
+
   res.render('mental-health-referral/check-answers', {
-    sections: getMentalHealthSummarySections(req.session.data)
+    sections: getMentalHealthSummarySections(req.session.data),
+    backHref: getMentalHealthCheckAnswersBackHref(req.session.data)
   })
 })
 
@@ -1348,6 +1378,12 @@ router.get('/mental-health-referral/confirmation', (req, res) => {
   res.render('mental-health-referral/confirmation')
 })
 
+router.get('/mental-health-referral/submission-email', (req, res) => {
+  req.session.data.mentalHealthReferenceNumber = req.session.data.mentalHealthReferenceNumber || generateMentalHealthReferenceNumber()
+
+  res.render('mental-health-referral/submission-email')
+})
+
 router.get('/mental-health-referral/referral-reason/:reasonSlug', (req, res, next) => {
   const page = referralReasonFollowUpBySlug[req.params.reasonSlug]
   const selectedPages = getSelectedReferralReasonFollowUps(req.session.data)
@@ -1360,14 +1396,16 @@ router.get('/mental-health-referral/referral-reason/:reasonSlug', (req, res, nex
     return res.redirect(`${mentalHealthBasePath}/reason-for-referral`)
   }
 
+  setMentalHealthReturnToCheckAnswers(req)
+
   res.render('mental-health-referral/question', {
     page,
     action: getReferralReasonFollowUpHref(page),
     pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
     totalPages: mentalHealthTotalPages,
     sectionTitle: getMentalHealthSectionTitle(getMentalHealthPageNumber('reason-for-referral')),
-    backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
-    nextHref: getReferralReasonFollowUpNextHref(page, req.session.data)
+    backHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getReferralReasonFollowUpBackHref(page, req.session.data),
+    nextHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getReferralReasonFollowUpNextHref(page, req.session.data)
   })
 })
 
@@ -1393,8 +1431,8 @@ router.post('/mental-health-referral/referral-reason/:reasonSlug', (req, res, ne
       pageNumber: getReferralReasonFollowUpPageNumber(page, req.session.data),
       totalPages: mentalHealthTotalPages,
       sectionTitle: getMentalHealthSectionTitle(getMentalHealthPageNumber('reason-for-referral')),
-      backHref: getReferralReasonFollowUpBackHref(page, req.session.data),
-      nextHref: getReferralReasonFollowUpNextHref(page, req.session.data),
+      backHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getReferralReasonFollowUpBackHref(page, req.session.data),
+      nextHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getReferralReasonFollowUpNextHref(page, req.session.data),
       errors,
       errorList: errorListFrom(errors),
       formData: {
@@ -1405,6 +1443,11 @@ router.post('/mental-health-referral/referral-reason/:reasonSlug', (req, res, ne
   }
 
   storeMentalHealthPageAnswers(page, values, req.session.data)
+
+  if (shouldReturnToMentalHealthCheckAnswers(req)) {
+    clearMentalHealthReturnToCheckAnswers(req)
+    return res.redirect(`${mentalHealthBasePath}/check-answers`)
+  }
 
   res.redirect(getReferralReasonFollowUpNextHref(page, req.session.data))
 })
@@ -1443,11 +1486,13 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
     )
   }
 
+  setMentalHealthReturnToCheckAnswers(req)
+
   res.render('mental-health-referral/question', {
     page,
     totalPages: mentalHealthTotalPages,
-    backHref: getMentalHealthBackHref(page, req.session.data),
-    nextHref: getMentalHealthNextHref(page, req.session.data)
+    backHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getMentalHealthBackHref(page, req.session.data),
+    nextHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getMentalHealthNextHref(page, req.session.data)
   })
 })
 
@@ -1478,8 +1523,8 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
     return res.status(422).render('mental-health-referral/question', {
       page,
       totalPages: mentalHealthTotalPages,
-      backHref: getMentalHealthBackHref(page, req.session.data),
-      nextHref: getMentalHealthNextHref(page, {
+      backHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getMentalHealthBackHref(page, req.session.data),
+      nextHref: shouldReturnToMentalHealthCheckAnswers(req) ? `${mentalHealthBasePath}/check-answers` : getMentalHealthNextHref(page, {
         ...req.session.data,
         ...values
       }),
@@ -1546,6 +1591,11 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
       advocateContactEmail: '',
       advocateContactPhone: ''
     })
+  }
+
+  if (shouldReturnToMentalHealthCheckAnswers(req)) {
+    clearMentalHealthReturnToCheckAnswers(req)
+    return res.redirect(`${mentalHealthBasePath}/check-answers`)
   }
 
   res.redirect(getMentalHealthNextHref(page, req.session.data))

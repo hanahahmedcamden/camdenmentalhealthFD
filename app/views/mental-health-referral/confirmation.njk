@@ -1,4 +1,5 @@
 {% extends "layouts/main.njk" %}
+{% from "components/button/macro.njk" import LBCamdenButton %}
 
 {% set pageTitle = "Referral received" %}
 
@@ -6,20 +7,22 @@
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <span class="govuk-caption-m">Page 29</span>
+        <span class="govuk-caption-m">Page 30 of 31</span>
         <div class="govuk-panel govuk-panel--confirmation">
           <h1 class="govuk-panel__title">Referral received</h1>
           <div class="govuk-panel__body">Reference number<br><strong>{{ data.mentalHealthReferenceNumber }}</strong></div>
         </div>
 
-        <p class="govuk-body-l">Thank you for making a referral for mental health social care.</p>
-
         <h2 class="govuk-heading-m">What happens next</h2>
         <p class="govuk-body">We’ll send you an email confirming your referral has been received.</p>
-        <p class="govuk-body">The mental health social care team will review the referral and contact you if they need more information.</p>
+        <p class="govuk-body">Your referral will be processed within 1 working day, then it’ll be triaged by the mental health social care team.</p>
+        <p class="govuk-body">If you’ve requested we contact you first, we will do using the contact details you’ve provided. Otherwise, we’ll contact the person you’ve referred or their next of kin if they cannot be reached.</p>
 
-        <h2 class="govuk-heading-m">Prototype data</h2>
-        <pre class="app-prototype-data">{{ data | json }}</pre>
+        {{ LBCamdenButton({
+          text: "View submission email",
+          href: "/mental-health-referral/submission-email",
+          classes: "lbcamden-button--secondary"
+        }) }}
       </div>
     </div>
   </div>

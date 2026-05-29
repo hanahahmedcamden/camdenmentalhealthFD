@@ -1,0 +1,30 @@
+{% extends "layouts/main.njk" %}
+
+{% set pageTitle = "Submission email" %}
+
+{% block beforeContent %}
+  <div class="govuk-width-container">
+    <a href="/mental-health-referral/confirmation" class="govuk-back-link">Back</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <span class="govuk-caption-m">Page 31 of 31</span>
+        <h1 class="govuk-heading-xl">Submission email</h1>
+
+        <div class="app-email-preview">
+          <p class="govuk-body govuk-!-font-weight-bold">mhsw.hub@camden</p>
+
+          <p class="govuk-body"><strong>Thank you for making a referral for mental health social care</strong></p>
+
+          <p class="govuk-body">Your referral will be processed within 1 working day, then it’ll be triaged by the mental health social care team.</p>
+
+          <p class="govuk-body">If you’ve requested we contact you first, we will do using the contact details you’ve provided. Otherwise, we’ll contact the person you’ve referred or their next of kin if they cannot be reached.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
