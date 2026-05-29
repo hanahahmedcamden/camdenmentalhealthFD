@@ -128,10 +128,11 @@
 {% endmacro %}
 
 {% macro renderCheckboxGroup(field, answerData, errors) %}
+  {% set hintText = field.hint or "Select all that apply" %}
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
-    <fieldset class="govuk-fieldset" {% if field.hint or errors[field.name] %}aria-describedby="{{ describedBy(field, errors) }}"{% endif %}>
+    <fieldset class="govuk-fieldset" aria-describedby="{{ field.name }}-hint{% if errors and errors[field.name] %} {{ field.name }}-error{% endif %}">
       <legend class="govuk-fieldset__legend{% if field.labelClasses %} {{ field.labelClasses }}{% endif %}{% if field.label == page.title %} govuk-visually-hidden{% endif %}">{{ field.label }}</legend>
-      {{ fieldHint(field) }}
+      <div id="{{ field.name }}-hint" class="govuk-hint">{{ hintText }}</div>
       {{ errorMessage(field.name, errors) }}
       <div class="govuk-checkboxes" data-module="govuk-checkboxes">
         {% for item in field.items %}
@@ -182,15 +183,16 @@
 {% endmacro %}
 
 {% macro renderContactDetails(field, answerData, errors) %}
+  {% set hintText = field.hint or "Select all that apply" %}
   {% set selectedContactMethods = answerData[field.name] or [] %}
   {% set emailId = field.emailName %}
   {% set phoneId = field.phoneName %}
   {% set emailConditionalId = "conditional-" ~ field.name ~ "-email" %}
   {% set phoneConditionalId = "conditional-" ~ field.name ~ "-phone" %}
   <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
-    <fieldset class="govuk-fieldset" {% if field.hint or errors[field.name] %}aria-describedby="{{ field.name }}-hint{% if errors[field.name] %} {{ field.name }}-error{% endif %}"{% endif %}>
+    <fieldset class="govuk-fieldset" aria-describedby="{{ field.name }}-hint{% if errors and errors[field.name] %} {{ field.name }}-error{% endif %}">
       <legend class="govuk-fieldset__legend{% if field.labelClasses %} {{ field.labelClasses }}{% else %} govuk-visually-hidden{% endif %}">{{ field.label }}</legend>
-      {{ fieldHint(field) }}
+      <div id="{{ field.name }}-hint" class="govuk-hint">{{ hintText }}</div>
       {{ errorMessage(field.name, errors) }}
       <div class="govuk-checkboxes" data-module="govuk-checkboxes">
         <div class="govuk-checkboxes__item">

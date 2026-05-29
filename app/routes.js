@@ -51,6 +51,24 @@ const mentalHealthPages = [
     ]
   },
   {
+    slug: 'relationship',
+    title: 'What’s your relationship to the person you’re referring?',
+    fields: [
+      {
+        type: 'select',
+        name: 'relationshipToPerson',
+        label: 'What’s your relationship to the person you’re referring?',
+        error: 'Select your relationship to the person you’re referring',
+        items: [
+          'GP or other primary care professional',
+          'NHS mental health professional',
+          'Housing or homelessness professional',
+          'Voluntary or community sector worker'
+        ]
+      }
+    ]
+  },
+  {
     slug: 'person-details',
     title: 'Details of the person you’re referring',
     fields: [
@@ -204,24 +222,6 @@ const mentalHealthPages = [
             { type: 'text', name: 'nhsNumber', label: 'Tell us their NHS number', error: 'Enter their NHS number' }
           ]
         }
-      }
-    ]
-  },
-  {
-    slug: 'relationship',
-    title: 'What’s your relationship to the person you’re referring?',
-    fields: [
-      {
-        type: 'select',
-        name: 'relationshipToPerson',
-        label: 'What’s your relationship to the person you’re referring?',
-        error: 'Select your relationship to the person you’re referring',
-        items: [
-          'GP or other primary care professional',
-          'NHS mental health professional',
-          'Housing or homelessness professional',
-          'Voluntary or community sector worker'
-        ]
       }
     ]
   },
@@ -394,20 +394,36 @@ const mentalHealthPages = [
   },
   {
     slug: 'children',
-    title: 'Do they live with any children?',
+    title: 'Do they live with children?',
     fields: [
       {
         type: 'radios',
         name: 'livesWithChildren',
-        label: 'Do they live with any children?',
-        error: 'Select whether they live with any children',
-        items: ['Yes', 'No'],
-        conditional: {
-          value: 'Yes',
-          fields: [
-            { type: 'textarea', name: 'childrenDetails', label: 'Tell us how many children and their ages', error: 'Tell us how many children and their ages' }
-          ]
-        }
+        label: 'Do they live with children?',
+        error: 'Select whether they live with children',
+        items: ['Yes', 'No']
+      }
+    ]
+  },
+  {
+    slug: 'children-details',
+    title: 'Details of the children who live with them',
+    hint: 'If you’re worried about a child or young person, find ways to report a vulnerable child or child abuse.',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'childrenCount',
+        label: 'How many children live with them?',
+        labelClasses: 'govuk-label--m',
+        error: 'Tell us how many children live with them'
+      },
+      {
+        type: 'textarea',
+        name: 'childrenAgeRange',
+        label: 'What is the age range of children who live with them?',
+        labelClasses: 'govuk-label--m',
+        hint: 'For example, 8 to 12',
+        error: 'Tell us the age range of children who live with them'
       }
     ]
   },
@@ -532,11 +548,11 @@ const mentalHealthPages = [
 const mentalHealthTotalPages = mentalHealthPages.length
 
 const mentalHealthSections = [
-  { title: 'Your details', start: 1, end: 2 },
-  { title: 'About the person you’re referring', start: 3, end: 15 },
+  { title: 'Your details', start: 1, end: 3 },
+  { title: 'About the person you’re referring', start: 4, end: 15 },
   { title: 'Health, communication and care needs', start: 16, end: 19 },
-  { title: 'Safety and risks', start: 20, end: 24 },
-  { title: 'Reason for referral', start: 25, end: 26 }
+  { title: 'Safety and risks', start: 20, end: 25 },
+  { title: 'Reason for referral', start: 26, end: 27 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -820,6 +836,10 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/clinical-professional-details`
   }
 
+  if (page.slug === 'pets' && data.livesWithChildren === 'No') {
+    return `${mentalHealthBasePath}/children`
+  }
+
   if (page.slug === 'current-situation') {
     const selectedFollowUpPages = getSelectedReferralReasonFollowUps(data)
     const lastFollowUpPage = selectedFollowUpPages[selectedFollowUpPages.length - 1]
@@ -861,6 +881,16 @@ function getMentalHealthNextHref(page, data = {}) {
 
   if (page.slug === 'clinical-professional-details') {
     return `${mentalHealthBasePath}/children`
+  }
+
+  if (page.slug === 'children') {
+    return data.livesWithChildren === 'Yes'
+      ? `${mentalHealthBasePath}/children-details`
+      : `${mentalHealthBasePath}/pets`
+  }
+
+  if (page.slug === 'children-details') {
+    return `${mentalHealthBasePath}/pets`
   }
 
   if (page.slug === 'reason-for-referral') {
@@ -1129,6 +1159,7 @@ function getMentalHealthSummarySections(data) {
   addMentalHealthSummaryRow(yourDetailsRows, 'Job title', data.referrerJobTitle, `${mentalHealthBasePath}/your-details`)
   addMentalHealthSummaryRow(yourDetailsRows, 'Organisation or team', data.referrerOrganisation, `${mentalHealthBasePath}/your-details`)
   addMentalHealthSummaryRow(yourDetailsRows, 'Your contact details', [data.referrerEmail, data.referrerPhone], `${mentalHealthBasePath}/your-contact-details`)
+  addMentalHealthSummaryRow(yourDetailsRows, 'Your relationship to them', data.relationshipToPerson, `${mentalHealthBasePath}/relationship`)
   addMentalHealthSummaryRow(personRows, 'Person being referred', `${data.personFirstName || ''} ${data.personLastName || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
   addMentalHealthSummaryRow(personRows, 'Date of birth', `${data.personDateOfBirthDay || ''} ${data.personDateOfBirthMonth || ''} ${data.personDateOfBirthYear || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
 
@@ -1178,7 +1209,6 @@ function getMentalHealthSummarySections(data) {
     addMentalHealthSummaryRow(personRows, 'NHS number', data.nhsNumber, `${mentalHealthBasePath}/identifiers`)
   }
 
-  addMentalHealthSummaryRow(personRows, 'Your relationship to them', data.relationshipToPerson, `${mentalHealthBasePath}/relationship`)
   addMentalHealthSummaryRow(personRows, 'They consent to the referral', data.personConsentsReferral, `${mentalHealthBasePath}/referral-awareness`)
 
   if (data.personConsentsReferral === 'No') {
@@ -1230,7 +1260,8 @@ function getMentalHealthSummarySections(data) {
   addMentalHealthSummaryRow(safetyRows, 'Lives with children', data.livesWithChildren, `${mentalHealthBasePath}/children`)
 
   if (data.livesWithChildren === 'Yes') {
-    addMentalHealthSummaryRow(safetyRows, 'Children details', data.childrenDetails, `${mentalHealthBasePath}/children`)
+    addMentalHealthSummaryRow(safetyRows, 'Number of children', data.childrenCount, `${mentalHealthBasePath}/children-details`)
+    addMentalHealthSummaryRow(safetyRows, 'Age range of children', data.childrenAgeRange, `${mentalHealthBasePath}/children-details`)
   }
 
   addMentalHealthSummaryRow(safetyRows, 'Lives with pets', data.livesWithPets, `${mentalHealthBasePath}/pets`)
@@ -1381,6 +1412,10 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
     return res.redirect(`${mentalHealthBasePath}/clinical-professionals`)
   }
 
+  if (page.slug === 'children-details' && req.session.data.livesWithChildren !== 'Yes') {
+    return res.redirect(`${mentalHealthBasePath}/children`)
+  }
+
   if (page.slug === 'clinical-professional-details') {
     req.session.data.clinicalProfessionalCount = Math.max(
       getClinicalProfessionalCount(req.session.data),
@@ -1401,6 +1436,10 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
 
   if (!page) {
     return next()
+  }
+
+  if (page.slug === 'children-details' && req.session.data.livesWithChildren !== 'Yes') {
+    return res.redirect(`${mentalHealthBasePath}/children`)
   }
 
   const values = normaliseMentalHealthBody(page, req.body)
@@ -1466,6 +1505,12 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   if (page.slug === 'clinical-professional-details') {
     req.session.data.clinicalProfessionalCount = getClinicalProfessionalCompletedCount(req.session.data)
     clearClinicalProfessionalAnswers(req.session.data, req.session.data.clinicalProfessionalCount + 1)
+  }
+
+  if (page.slug === 'children' && req.session.data.livesWithChildren === 'No') {
+    req.session.data.childrenCount = ''
+    req.session.data.childrenAgeRange = ''
+    req.session.data.childrenDetails = ''
   }
 
   if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {

@@ -64,8 +64,9 @@
         </div>
 
         <div class="govuk-form-group">
-          <fieldset class="govuk-fieldset">
+          <fieldset class="govuk-fieldset" aria-describedby="responseMethods-hint">
             <legend class="govuk-fieldset__legend">How would you like to receive our response to your complaint?</legend>
+            <div id="responseMethods-hint" class="govuk-hint">Select all that apply</div>
             <div class="govuk-checkboxes">
               {% for method in ["Letter", "Email", "Phone"] %}
                 <div class="govuk-checkboxes__item">
