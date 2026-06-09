@@ -1,0 +1,57 @@
+{% extends "layouts/main.njk" %}
+{% from "macros/forms.njk" import errorSummary %}
+{% from "components/button/macro.njk" import LBCamdenButton %}
+
+{% set pageTitle = "Details of the professionals" %}
+{% set answerData = formData or professional or {} %}
+
+{% block beforeContent %}
+  <div class="govuk-width-container">
+    <a href="{{ backHref }}" class="govuk-back-link">Back</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{ errorSummary(errorList) }}
+
+        <form action="{{ action }}" method="post" novalidate>
+          <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ pageNumber }} of {{ totalPages }}</p>
+          <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">Details of the professionals</h1>
+          <div class="govuk-hint">Tell us their details, if you know them.</div>
+
+          <fieldset class="govuk-fieldset govuk-!-margin-bottom-6">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Professional</legend>
+
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="firstName">First name</label>
+              <input class="govuk-input" id="firstName" name="firstName" type="text" value="{{ answerData.firstName or '' }}" autocomplete="given-name">
+            </div>
+
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="lastName">Last name</label>
+              <input class="govuk-input" id="lastName" name="lastName" type="text" value="{{ answerData.lastName or '' }}" autocomplete="family-name">
+            </div>
+
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="jobTitle">Job title</label>
+              <input class="govuk-input" id="jobTitle" name="jobTitle" type="text" value="{{ answerData.jobTitle or '' }}" autocomplete="organization-title">
+            </div>
+
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="organisation">Organisation or team</label>
+              <input class="govuk-input" id="organisation" name="organisation" type="text" value="{{ answerData.organisation or '' }}" autocomplete="organization">
+            </div>
+          </fieldset>
+
+          {{ LBCamdenButton({
+            text: "Continue",
+            preventDoubleClick: true
+          }) }}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

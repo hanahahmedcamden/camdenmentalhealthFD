@@ -1,0 +1,82 @@
+{% extends "layouts/main.njk" %}
+{% from "macros/forms.njk" import errorSummary %}
+{% from "components/button/macro.njk" import LBCamdenButton %}
+
+{% set pageTitle = "You have added " ~ professionals.length ~ " professional" ~ ("" if professionals.length == 1 else "s") %}
+
+{% macro addAnotherError(errors) %}
+  {% if errors and errors.addAnotherProfessional %}
+    <p id="addAnotherProfessional-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ errors.addAnotherProfessional }}
+    </p>
+  {% endif %}
+{% endmacro %}
+
+{% block beforeContent %}
+  <div class="govuk-width-container">
+    <a href="{{ backHref }}" class="govuk-back-link">Back</a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {{ errorSummary(errorList) }}
+
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ pageNumber }} of {{ totalPages }}</p>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">You have added {{ professionals.length }} professional{{ "s" if professionals.length != 1 }}</h1>
+
+        <div class="govuk-form-group">
+          <dl class="govuk-summary-list hmrc-list-with-actions hmrc-list-with-actions--short">
+            {% for professional in professionals %}
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-font-weight-regular hmrc-summary-list__key">
+                  {{ professional.name }}
+                </dt>
+                <dd class="govuk-summary-list__actions hmrc-summary-list__actions">
+                  <ul class="govuk-summary-list__actions-list">
+                    <li class="govuk-summary-list__actions-list-item">
+                      <a class="govuk-link" href="{{ professional.changeHref }}"><span aria-hidden="true">Change</span><span class="govuk-visually-hidden"> Change {{ professional.name }}</span></a>
+                    </li>
+                    <li class="govuk-summary-list__actions-list-item">
+                      <a class="govuk-link" href="{{ professional.removeHref }}"><span aria-hidden="true">Remove</span><span class="govuk-visually-hidden"> Remove {{ professional.name }} from the list</span></a>
+                    </li>
+                  </ul>
+                </dd>
+              </div>
+            {% endfor %}
+          </dl>
+        </div>
+
+        <form action="{{ action }}" method="post" novalidate>
+          {% if professionals.length < maxProfessionals %}
+            <div class="govuk-form-group{% if errors and errors.addAnotherProfessional %} govuk-form-group--error{% endif %}">
+              <fieldset class="govuk-fieldset" aria-describedby="{% if errors and errors.addAnotherProfessional %}addAnotherProfessional-error{% endif %}">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Do you need to add another professional?</legend>
+                {{ addAnotherError(errors) }}
+                <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="addAnotherProfessional" name="addAnotherProfessional" type="radio" value="Yes" {% if formData and formData.addAnotherProfessional == "Yes" %}checked{% endif %}>
+                    <label class="govuk-label govuk-radios__label" for="addAnotherProfessional">Yes</label>
+                  </div>
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="addAnotherProfessional-2" name="addAnotherProfessional" type="radio" value="No" {% if formData and formData.addAnotherProfessional == "No" %}checked{% endif %}>
+                    <label class="govuk-label govuk-radios__label" for="addAnotherProfessional-2">No</label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          {% else %}
+            <p class="govuk-body">You have added the maximum number of professionals.</p>
+          {% endif %}
+
+          {{ LBCamdenButton({
+            text: "Continue",
+            preventDoubleClick: true
+          }) }}
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
