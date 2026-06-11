@@ -471,21 +471,42 @@ const mentalHealthPages = [
     title: 'Do they have any current risks?',
     fields: [
       {
+        type: 'radios',
+        name: 'hasCurrentRisks',
+        label: 'Do they have any current risks?',
+        hint: 'For example, physical abuse, self-neglect, hoarding, homelessness or risks to dependents',
+        error: 'Select whether they have any current risks',
+        items: ['Yes', 'No', 'I do not know']
+      }
+    ]
+  },
+  {
+    slug: 'current-risk-details',
+    title: 'What current risks do they have?',
+    fields: [
+      {
         type: 'checkboxGroup',
         name: 'currentRisks',
-        label: 'Do they have any current risks?',
+        label: 'What current risks do they have?',
         hint: 'Select all that apply',
-        error: 'Select any current risks, or select None of these',
-        exclusive: 'None of these',
-        exclusiveError: 'Select current risks or None of these',
+        error: 'Select what current risks they have',
         items: [
-          'Self-harm',
-          'Suicidal ideation',
-          'Neglect',
-          'Substance misuse',
-          'Risk to others',
-          'Other',
-          'None of these'
+          'Physical abuse',
+          'Emotional abuse',
+          'Financial abuse',
+          'Exploitation or cuckooing',
+          'Severe self-neglect',
+          'Domestic abuse or coercive control',
+          'Hoarding and environmental hazards',
+          'Immediate risk of placement breakdown',
+          'Carer burnout or breakdown',
+          'Imminent risk of homelessness',
+          'Unmet eligible care needs',
+          'Inability to manage finances or severe debt',
+          'Severe social isolation',
+          'Disengagement from essential services',
+          'Risks to dependents (children or vulnerable adults)',
+          'Other'
         ],
         conditional: {
           value: 'Other',
@@ -535,8 +556,20 @@ const mentalHealthPages = [
           'Social care and support needs assessment',
           'Review of existing package of care',
           'Deep clean or environmental health',
-          'Carer support or assessment'
-        ]
+          'Carer support or assessment',
+          'Other'
+        ],
+        conditional: {
+          value: 'Other',
+          fields: [
+            {
+              type: 'textarea',
+              name: 'otherReferralReasonDetails',
+              label: 'Tell us why you’re making this referral',
+              error: 'Tell us why you’re making this referral'
+            }
+          ]
+        }
       }
     ]
   },
@@ -564,8 +597,8 @@ const mentalHealthSections = [
   { title: 'Your details', start: 3, end: 5 },
   { title: 'About the person you’re referring', start: 6, end: 17 },
   { title: 'Health, communication and care needs', start: 18, end: 21 },
-  { title: 'Safety and risks', start: 22, end: 26 },
-  { title: 'Reason for referral', start: 27, end: 28 }
+  { title: 'Safety and risks', start: 22, end: 27 },
+  { title: 'Reason for referral', start: 28, end: 29 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -672,7 +705,7 @@ const referralReasonFollowUpPages = [
       {
         type: 'textarea',
         name: 'careActAssessmentDetails',
-        label: "What are the person's primary needs for daily living?",
+        label: 'What are the person’s primary needs for daily living?',
         error: 'Enter the person’s primary needs for daily living'
       }
     ]
@@ -680,12 +713,13 @@ const referralReasonFollowUpPages = [
   {
     reason: 'Review of existing package of care',
     slug: 'review-of-existing-package-of-care',
-    title: 'Tell us what has changed the last assessment',
+    title: 'Review of existing care package',
     fields: [
       {
         type: 'textarea',
         name: 'packageReviewDetails',
-        label: 'We need to understand why a review is needed',
+        label: 'Tell us what has changed since the last assessment',
+        hint: 'We need to understand why a review is needed',
         error: 'Enter what has changed since the last assessment'
       }
     ]
@@ -706,9 +740,9 @@ const referralReasonFollowUpPages = [
       {
         type: 'textarea',
         name: 'deepCleanFireSafetyDetails',
-        label: 'Are there risks to health/fire safety?',
+        label: 'Are there risks to health or fire safety?',
         labelClasses: 'govuk-label--m',
-        error: 'Tell us if there are risks to health/fire safety'
+        error: 'Tell us if there are risks to health or fire safety'
       }
     ]
   },
@@ -722,7 +756,7 @@ const referralReasonFollowUpPages = [
       {
         type: 'textarea',
         name: 'carerImpactDetails',
-        label: 'What is the current impact of the caring role?',
+        label: 'What’s the current impact of the caring role?',
         labelClasses: 'govuk-label--m',
         error: 'Enter the current impact of the caring role'
       }
@@ -967,6 +1001,10 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/children`
   }
 
+  if (page.slug === 'environmental-risks' && data.hasCurrentRisks !== 'Yes') {
+    return `${mentalHealthBasePath}/current-risks`
+  }
+
   if (page.slug === 'contact-before-person') {
     const selectedFollowUpPages = getSelectedReferralReasonFollowUps(data)
     const lastFollowUpPage = selectedFollowUpPages[selectedFollowUpPages.length - 1]
@@ -1022,6 +1060,16 @@ function getMentalHealthNextHref(page, data = {}) {
 
   if (page.slug === 'children-details') {
     return `${mentalHealthBasePath}/violence-or-aggression`
+  }
+
+  if (page.slug === 'current-risks') {
+    return data.hasCurrentRisks === 'Yes'
+      ? `${mentalHealthBasePath}/current-risk-details`
+      : `${mentalHealthBasePath}/environmental-risks`
+  }
+
+  if (page.slug === 'current-risk-details') {
+    return `${mentalHealthBasePath}/environmental-risks`
   }
 
   if (page.slug === 'reason-for-referral') {
@@ -1426,10 +1474,14 @@ function getMentalHealthSummarySections(data) {
   }
 
   addMentalHealthSummaryRow(safetyRows, 'History of violence or aggression', data.historyOfViolenceOrAggression, `${mentalHealthBasePath}/violence-or-aggression`)
-  addMentalHealthSummaryRow(safetyRows, 'Current risks', data.currentRisks, `${mentalHealthBasePath}/current-risks`)
+  addMentalHealthSummaryRow(safetyRows, 'Current risks', data.hasCurrentRisks, `${mentalHealthBasePath}/current-risks`)
 
-  if (data.currentRisks && data.currentRisks.includes('Other')) {
-    addMentalHealthSummaryRow(safetyRows, 'Other current risks', data.currentRisksOtherDetails, `${mentalHealthBasePath}/current-risks`)
+  if (data.hasCurrentRisks === 'Yes') {
+    addMentalHealthSummaryRow(safetyRows, 'Current risk details', data.currentRisks, `${mentalHealthBasePath}/current-risk-details`)
+
+    if (data.currentRisks && data.currentRisks.includes('Other')) {
+      addMentalHealthSummaryRow(safetyRows, 'Other current risks', data.currentRisksOtherDetails, `${mentalHealthBasePath}/current-risk-details`)
+    }
   }
 
   addMentalHealthSummaryRow(safetyRows, 'Environmental risks', data.hasEnvironmentalRisks, `${mentalHealthBasePath}/environmental-risks`)
@@ -1443,6 +1495,10 @@ function getMentalHealthSummarySections(data) {
   getSelectedReferralReasonFollowUps(data).forEach((page) => {
     addMentalHealthSummaryRow(reasonRows, page.title, getReferralReasonFollowUpSummaryValues(page, data), getReferralReasonFollowUpHref(page))
   })
+
+  if (data.referralReasons && data.referralReasons.includes('Other')) {
+    addMentalHealthSummaryRow(reasonRows, 'Other reason for referral', data.otherReferralReasonDetails, `${mentalHealthBasePath}/reason-for-referral`)
+  }
 
   addMentalHealthSummaryRow(firstContactRows, 'Who to contact first', data.contactBeforePerson, `${mentalHealthBasePath}/contact-before-person`)
 
@@ -1844,6 +1900,10 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
     return res.redirect(`${mentalHealthBasePath}/children`)
   }
 
+  if (page.slug === 'current-risk-details' && req.session.data.hasCurrentRisks !== 'Yes') {
+    return res.redirect(`${mentalHealthBasePath}/current-risks`)
+  }
+
   if (
     page.slug === 'mental-health-conditions' &&
     ![mentalHealthConfirmedDiagnosisAnswer, mentalHealthSuspectedConditionsAnswer].includes(req.session.data.mentalHealthConditionsCheck)
@@ -1878,6 +1938,10 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
 
   if (page.slug === 'children-details' && req.session.data.livesWithChildren !== 'Yes') {
     return res.redirect(`${mentalHealthBasePath}/children`)
+  }
+
+  if (page.slug === 'current-risk-details' && req.session.data.hasCurrentRisks !== 'Yes') {
+    return res.redirect(`${mentalHealthBasePath}/current-risks`)
   }
 
   if (
@@ -1997,6 +2061,15 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   if (page.slug === 'children') {
     req.session.data.livesWithPets = ''
     req.session.data.petsDetails = ''
+  }
+
+  if (page.slug === 'current-risks' && req.session.data.hasCurrentRisks !== 'Yes') {
+    req.session.data.currentRisks = []
+    req.session.data.currentRisksOtherDetails = ''
+  }
+
+  if (page.slug === 'current-risk-details' && !asArray(req.session.data.currentRisks).includes('Other')) {
+    req.session.data.currentRisksOtherDetails = ''
   }
 
   if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {

@@ -324,7 +324,7 @@
           {% endif %}
 
           {% set visiblePageNumber = pageNumber or page.pageNumber or (page.index + 1) %}
-          <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ visiblePageNumber }} of {{ totalPages or 32 }}</p>
+          <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ visiblePageNumber }} of {{ totalPages or 33 }}</p>
           <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ page.title }}</h1>
           {% if page.hintHtml %}
             <div class="govuk-hint">{{ page.hintHtml | safe }}</div>
