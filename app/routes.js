@@ -690,10 +690,8 @@ function getMentalHealthPageForData(page, data = {}) {
   }
 }
 
-function clearUnavailablePreferredContactMethods(data = {}) {
-  const allowedPreferredContactItems = getPreferredContactItems(data)
-
-  data.preferredContactMethods = asArray(data.preferredContactMethods).filter((item) => allowedPreferredContactItems.includes(item))
+function clearPreferredContactMethods(data = {}) {
+  data.preferredContactMethods = []
 }
 
 const referralReasonFollowUpPages = [
@@ -2020,7 +2018,7 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   }
 
   if (page.slug === 'contact-person') {
-    clearUnavailablePreferredContactMethods(req.session.data)
+    clearPreferredContactMethods(req.session.data)
   }
 
   if (page.slug === 'next-of-kin' && req.session.data.hasNextOfKinDetails === 'No') {
