@@ -589,7 +589,7 @@ const mentalHealthPages = [
 ]
 
 const mentalHealthStartPageCount = 1
-const mentalHealthEndPageCount = 4
+const mentalHealthEndPageCount = 3
 const mentalHealthTotalPages = mentalHealthStartPageCount + mentalHealthPages.length + mentalHealthEndPageCount
 
 const mentalHealthSections = [
@@ -1604,28 +1604,14 @@ router.get('/mental-health-referral/check-answers', (req, res) => {
 })
 
 router.post('/mental-health-referral/check-answers', (req, res) => {
-  res.redirect(`${mentalHealthBasePath}/declaration`)
-})
-
-router.get('/mental-health-referral/declaration', (req, res) => {
-  res.render('mental-health-referral/declaration')
-})
-
-router.post('/mental-health-referral/declaration', (req, res) => {
-  req.session.data.mentalHealthReferenceNumber = generateMentalHealthReferenceNumber()
-
   res.redirect(`${mentalHealthBasePath}/confirmation`)
 })
 
 router.get('/mental-health-referral/confirmation', (req, res) => {
-  req.session.data.mentalHealthReferenceNumber = req.session.data.mentalHealthReferenceNumber || generateMentalHealthReferenceNumber()
-
   res.render('mental-health-referral/confirmation')
 })
 
 router.get('/mental-health-referral/submission-email', (req, res) => {
-  req.session.data.mentalHealthReferenceNumber = req.session.data.mentalHealthReferenceNumber || generateMentalHealthReferenceNumber()
-
   res.render('mental-health-referral/submission-email')
 })
 
