@@ -297,6 +297,19 @@ const mentalHealthPages = [
     fields: [
       {
         type: 'radios',
+        name: 'englishSpeakingAbility',
+        label: 'How well can they speak English?',
+        labelClasses: 'govuk-fieldset__legend--m',
+        error: 'Select how well they can speak English',
+        items: [
+          'English is their first language',
+          'They can speak English well',
+          'They can speak English a little',
+          'They cannot speak English'
+        ]
+      },
+      {
+        type: 'radios',
         name: 'hasCommunicationNeeds',
         label: 'Does the person you’re referring have any communication needs?',
         labelClasses: 'govuk-fieldset__legend--m',
@@ -1435,6 +1448,8 @@ function getMentalHealthSummarySections(data) {
   if (data.hasCommunicationNeeds === 'Yes') {
     addMentalHealthSummaryRow(needsRows, 'Communication needs details', data.communicationNeedsDetails, `${mentalHealthBasePath}/communication-needs`)
   }
+
+  addMentalHealthSummaryRow(needsRows, 'How well they can speak English', data.englishSpeakingAbility, `${mentalHealthBasePath}/communication-needs`)
 
   addMentalHealthSummaryRow(needsRows, 'Reasonable adjustments', data.needsReasonableAdjustments, `${mentalHealthBasePath}/communication-needs`)
 
