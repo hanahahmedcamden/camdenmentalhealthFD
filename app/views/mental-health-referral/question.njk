@@ -44,13 +44,17 @@
       type="{{ inputType }}"
       value="{{ answerData[field.name] or '' }}"
       {% if field.autocomplete %}autocomplete="{{ field.autocomplete }}"{% endif %}
+      {% if field.inputmode %}inputmode="{{ field.inputmode }}"{% endif %}
+      {% if field.pattern %}pattern="{{ field.pattern }}"{% endif %}
       {% if field.hint or errors[field.name] %}aria-describedby="{{ describedBy(field, errors) }}"{% endif %}
     >
   </div>
 {% endmacro %}
 
 {% macro renderTextarea(field, answerData, errors) %}
-  <div class="govuk-form-group{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
+  {% set characterLimit = field.maxlength or 500 %}
+  {% set characterCountId = field.name ~ "-count" %}
+  <div class="govuk-form-group govuk-character-count{% if errors and errors[field.name] %} govuk-form-group--error{% endif %}">
     <label class="govuk-label{% if field.labelClasses %} {{ field.labelClasses }}{% endif %}{% if field.label == page.title %} govuk-visually-hidden{% endif %}" for="{{ field.name }}">{{ field.label }}</label>
     {{ fieldHint(field) }}
     {{ errorMessage(field.name, errors) }}
@@ -59,8 +63,10 @@
       id="{{ field.name }}"
       name="{{ field.name }}"
       rows="5"
-      {% if field.hint or errors[field.name] %}aria-describedby="{{ describedBy(field, errors) }}"{% endif %}
+      maxlength="{{ characterLimit }}"
+      aria-describedby="{% if field.hint or errors[field.name] %}{{ describedBy(field, errors) }} {% endif %}{{ characterCountId }}"
     >{{ answerData[field.name] or '' }}</textarea>
+    <div id="{{ characterCountId }}" class="govuk-hint govuk-character-count__message">You can enter up to {{ characterLimit }} characters</div>
   </div>
 {% endmacro %}
 
@@ -271,12 +277,12 @@
       <span class="govuk-details__summary-text">They do not have a permanent address</span>
     </summary>
     <div class="govuk-details__text">
-      <div class="govuk-form-group{% if errors and errors.personCurrentSituation %} govuk-form-group--error{% endif %}">
+      <div class="govuk-form-group govuk-character-count{% if errors and errors.personCurrentSituation %} govuk-form-group--error{% endif %}">
         <label class="govuk-label govuk-visually-hidden" for="personCurrentSituation">Tell us about their current situation</label>
         <div id="personCurrentSituation-hint" class="govuk-hint">We need an address to pass their referral to the right area team. If they’re in temporary accommodation, use that address. If they’re homeless, tell us about their current situation</div>
         {{ errorMessage("personCurrentSituation", errors) }}
         <textarea class="govuk-textarea{% if errors and errors.personCurrentSituation %} govuk-textarea--error{% endif %}" id="personCurrentSituation" name="personCurrentSituation" rows="5" maxlength="500" aria-describedby="personCurrentSituation-hint personCurrentSituation-count{% if errors and errors.personCurrentSituation %} personCurrentSituation-error{% endif %}">{{ answerData.personCurrentSituation or '' }}</textarea>
-        <div id="personCurrentSituation-count" class="govuk-hint">You can enter up to 500 characters</div>
+        <div id="personCurrentSituation-count" class="govuk-hint govuk-character-count__message">You can enter up to 500 characters</div>
       </div>
     </div>
   </details>
@@ -324,7 +330,7 @@
           {% endif %}
 
           {% set visiblePageNumber = pageNumber or page.pageNumber or (page.index + 1) %}
-          <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ visiblePageNumber }} of {{ totalPages or 32 }}</p>
+          <p class="govuk-body-s govuk-!-margin-bottom-1">Page {{ visiblePageNumber }} of {{ totalPages or 33 }}</p>
           <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ page.title }}</h1>
           {% if page.hintHtml %}
             <div class="govuk-hint">{{ page.hintHtml | safe }}</div>

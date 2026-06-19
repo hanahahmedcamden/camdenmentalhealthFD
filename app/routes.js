@@ -32,9 +32,9 @@ function normaliseText(value) {
 const mentalHealthBasePath = '/mental-health-referral'
 const mentalHealthReturnToCheckAnswersQuery = 'returnTo=check-answers'
 const mentalHealthClinicalProfessionalMax = 5
-const mentalHealthConfirmedDiagnosisAnswer = 'Yes, they have mental health conditions with a confirmed diagnosis'
-const mentalHealthSuspectedConditionsAnswer = 'Yes, they have suspected mental health conditions'
-const mentalHealthNoConditionsAnswer = 'No, they have no mental health conditions'
+const mentalHealthConfirmedDiagnosisAnswer = 'They have mental health conditions with a confirmed diagnosis'
+const mentalHealthSuspectedConditionsAnswer = 'They have suspected mental health conditions'
+const mentalHealthNoConditionsAnswer = 'They have no mental health conditions'
 
 const mentalHealthPages = [
   {
@@ -42,9 +42,10 @@ const mentalHealthPages = [
     title: 'Does the person you’re referring have any mental health conditions?',
     fields: [
       {
-        type: 'radios',
+        type: 'checkboxGroup',
         name: 'mentalHealthConditionsCheck',
         label: 'Does the person you’re referring have any mental health conditions?',
+        hint: 'Select all that apply',
         error: 'Select whether the person you’re referring has any mental health conditions',
         items: [
           mentalHealthConfirmedDiagnosisAnswer,
@@ -248,7 +249,7 @@ const mentalHealthPages = [
         conditional: {
           value: 'Yes',
           fields: [
-            { type: 'text', name: 'nhsNumber', label: 'Tell us their NHS number', error: 'Enter their NHS number' }
+            { type: 'text', name: 'nhsNumber', label: 'Tell us their NHS number', error: 'Enter their NHS number', numericOnly: true, numericError: 'Enter their NHS number using numbers only', inputmode: 'numeric', pattern: '[0-9]*' }
           ]
         }
       }
@@ -342,8 +343,27 @@ const mentalHealthPages = [
   },
   {
     slug: 'mental-health-conditions',
-    title: 'Mental health conditions',
-    fields: []
+    title: 'You’ve told us they have mental health conditions with a confirmed diagnosis',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'confirmedDiagnosisDetails',
+        label: 'Give more detail about this',
+        error: 'Give more detail about their mental health conditions with a confirmed diagnosis'
+      }
+    ]
+  },
+  {
+    slug: 'suspected-mental-health-conditions',
+    title: 'You’ve told us they have suspected mental health conditions',
+    fields: [
+      {
+        type: 'textarea',
+        name: 'suspectedConditionsDetails',
+        label: 'Give more detail about this',
+        error: 'Give more detail about their suspected mental health conditions'
+      }
+    ]
   },
   {
     slug: 'clinical-professionals',
@@ -433,7 +453,7 @@ const mentalHealthPages = [
   {
     slug: 'children',
     title: 'Do they live with any children under age 18?',
-    hintHtml: 'If you’re worried about a child or young person, <a class="govuk-link" href="mailto:https://www.camden.gov.uk/are-you-worried-about-a-child">find ways to report a vulnerable child or child abuse</a>.',
+    hintHtml: 'If you’re worried about a child or young person, <a class="govuk-link" href="https://www.camden.gov.uk/are-you-worried-about-a-child">find ways to report a vulnerable child or child abuse</a>.',
     fields: [
       {
         type: 'radios',
@@ -487,7 +507,7 @@ const mentalHealthPages = [
         type: 'radios',
         name: 'hasCurrentRisks',
         label: 'Do they have any current risks?',
-        hint: 'For example, physical abuse, self-neglect, hoarding, homelessness or risks to dependents',
+        hint: 'For example, abuse, self-neglect, hoarding, homelessness or risks to dependents',
         error: 'Select whether they have any current risks',
         items: ['Yes', 'No', 'I do not know']
       }
@@ -609,9 +629,9 @@ const mentalHealthSections = [
   { title: 'Referral details', start: 2, end: 2 },
   { title: 'Your details', start: 3, end: 5 },
   { title: 'About the person you’re referring', start: 6, end: 17 },
-  { title: 'Health, communication and care needs', start: 18, end: 21 },
-  { title: 'Safety and risks', start: 22, end: 27 },
-  { title: 'Reason for referral', start: 28, end: 29 }
+  { title: 'Health, communication and care needs', start: 18, end: 22 },
+  { title: 'Safety and risks', start: 23, end: 28 },
+  { title: 'Reason for referral', start: 29, end: 30 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -633,6 +653,22 @@ function getMentalHealthPageNumber(slug) {
   return mentalHealthPageBySlug[slug].pageNumber
 }
 
+function hasMentalHealthConditionAnswer(data = {}, answer) {
+  return asArray(data.mentalHealthConditionsCheck).includes(answer)
+}
+
+function hasConfirmedMentalHealthCondition(data = {}) {
+  return hasMentalHealthConditionAnswer(data, mentalHealthConfirmedDiagnosisAnswer)
+}
+
+function hasSuspectedMentalHealthCondition(data = {}) {
+  return hasMentalHealthConditionAnswer(data, mentalHealthSuspectedConditionsAnswer)
+}
+
+function hasNoMentalHealthCondition(data = {}) {
+  return hasMentalHealthConditionAnswer(data, mentalHealthNoConditionsAnswer)
+}
+
 function getPreferredContactItems(data = {}) {
   const personContactMethods = asArray(data.personContactMethods)
 
@@ -650,40 +686,6 @@ function getPreferredContactItems(data = {}) {
 }
 
 function getMentalHealthPageForData(page, data = {}) {
-  if (page.slug === 'mental-health-conditions') {
-    if (data.mentalHealthConditionsCheck === mentalHealthConfirmedDiagnosisAnswer) {
-      return {
-        ...page,
-        title: 'You’ve told us they have mental health conditions with a confirmed diagnosis',
-        fields: [
-          {
-            type: 'textarea',
-            name: 'confirmedDiagnosisDetails',
-            label: 'Give more detail about this',
-            error: 'Give more detail about their mental health conditions with a confirmed diagnosis'
-          }
-        ]
-      }
-    }
-
-    if (data.mentalHealthConditionsCheck === mentalHealthSuspectedConditionsAnswer) {
-      return {
-        ...page,
-        title: 'You’ve told us they have suspected mental health conditions',
-        fields: [
-          {
-            type: 'textarea',
-            name: 'suspectedConditionsDetails',
-            label: 'Give more detail about this',
-            error: 'Give more detail about their suspected mental health conditions'
-          }
-        ]
-      }
-    }
-
-    return page
-  }
-
   if (page.slug !== 'preferred-contact') {
     return page
   }
@@ -1000,6 +1002,20 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/referral-awareness`
   }
 
+  if (page.slug === 'suspected-mental-health-conditions' && !hasConfirmedMentalHealthCondition(data)) {
+    return `${mentalHealthBasePath}/communication-needs`
+  }
+
+  if (page.slug === 'clinical-professionals') {
+    if (hasSuspectedMentalHealthCondition(data)) {
+      return `${mentalHealthBasePath}/suspected-mental-health-conditions`
+    }
+
+    if (hasConfirmedMentalHealthCondition(data)) {
+      return `${mentalHealthBasePath}/mental-health-conditions`
+    }
+  }
+
   if (page.slug === 'children') {
     if (data.clinicalProfessionalsInvolved !== 'Yes') {
       return `${mentalHealthBasePath}/clinical-professionals`
@@ -1028,7 +1044,7 @@ function getMentalHealthBackHref(page, data = {}) {
 
 function getMentalHealthNextHref(page, data = {}) {
   if (page.slug === 'mental-health-conditions-check') {
-    return data.mentalHealthConditionsCheck === mentalHealthNoConditionsAnswer
+    return hasNoMentalHealthCondition(data)
       ? `${mentalHealthBasePath}/not-eligible`
       : `${mentalHealthBasePath}/your-details`
   }
@@ -1051,6 +1067,28 @@ function getMentalHealthNextHref(page, data = {}) {
     return data.personConsentsReferral === 'No'
       ? `${mentalHealthBasePath}/consent-not-given`
       : `${mentalHealthBasePath}/communication-needs`
+  }
+
+  if (page.slug === 'communication-needs') {
+    if (hasConfirmedMentalHealthCondition(data)) {
+      return `${mentalHealthBasePath}/mental-health-conditions`
+    }
+
+    if (hasSuspectedMentalHealthCondition(data)) {
+      return `${mentalHealthBasePath}/suspected-mental-health-conditions`
+    }
+
+    return `${mentalHealthBasePath}/clinical-professionals`
+  }
+
+  if (page.slug === 'mental-health-conditions') {
+    return hasSuspectedMentalHealthCondition(data)
+      ? `${mentalHealthBasePath}/suspected-mental-health-conditions`
+      : `${mentalHealthBasePath}/clinical-professionals`
+  }
+
+  if (page.slug === 'suspected-mental-health-conditions') {
+    return `${mentalHealthBasePath}/clinical-professionals`
   }
 
   if (page.slug === 'clinical-professionals') {
@@ -1237,6 +1275,8 @@ function validateMentalHealthField(field, values, errors) {
 
   if (!values[field.name]) {
     errors[field.name] = field.error
+  } else if (field.numericOnly && !/^[0-9]+$/.test(values[field.name])) {
+    errors[field.name] = field.numericError || `${field.label} must only include numbers`
   }
 
   if (field.conditional && values[field.name] === field.conditional.value) {
@@ -1366,6 +1406,13 @@ function addMentalHealthSummarySection(sections, title) {
   return section.rows
 }
 
+function getMentalHealthContactSummaryValues(methods, email, phone) {
+  return [
+    ...(asArray(methods).includes('Email') ? [email ? `Email: ${email}` : 'Email'] : []),
+    ...(asArray(methods).includes('Phone') ? [phone ? `Phone: ${phone}` : 'Phone'] : [])
+  ]
+}
+
 function getMentalHealthSummarySections(data) {
   const sections = []
   const referralDetailsRows = addMentalHealthSummarySection(sections, 'Referral details')
@@ -1398,21 +1445,13 @@ function getMentalHealthSummarySections(data) {
   }
 
   addMentalHealthSummaryRow(personRows, 'Accommodation type', data.accommodationType, `${mentalHealthBasePath}/accommodation`)
-  addMentalHealthSummaryRow(personRows, 'How they would like to be contacted', [
-    ...(data.personContactMethods || []),
-    data.personContactEmail && `Email: ${data.personContactEmail}`,
-    data.personContactPhone && `Phone: ${data.personContactPhone}`
-  ], `${mentalHealthBasePath}/contact-person`)
+  addMentalHealthSummaryRow(personRows, 'How they would like to be contacted', getMentalHealthContactSummaryValues(data.personContactMethods, data.personContactEmail, data.personContactPhone), `${mentalHealthBasePath}/contact-person`)
   addMentalHealthSummaryRow(personRows, 'Preferred contact methods', asArray(data.preferredContactMethods).filter((item) => getPreferredContactItems(data).includes(item)), `${mentalHealthBasePath}/preferred-contact`)
   addMentalHealthSummaryRow(personRows, 'Next of kin details known', data.hasNextOfKinDetails, `${mentalHealthBasePath}/next-of-kin`)
 
   if (data.hasNextOfKinDetails === 'Yes') {
     addMentalHealthSummaryRow(personRows, 'Next of kin', `${data.nextOfKinFirstName || ''} ${data.nextOfKinLastName || ''}`.trim(), `${mentalHealthBasePath}/next-of-kin-contact`)
-    addMentalHealthSummaryRow(personRows, 'Next of kin contact methods', [
-      ...(data.nextOfKinContactMethods || []),
-      data.nextOfKinContactEmail && `Email: ${data.nextOfKinContactEmail}`,
-      data.nextOfKinContactPhone && `Phone: ${data.nextOfKinContactPhone}`
-    ], `${mentalHealthBasePath}/next-of-kin-contact`)
+    addMentalHealthSummaryRow(personRows, 'Next of kin contact methods', getMentalHealthContactSummaryValues(data.nextOfKinContactMethods, data.nextOfKinContactEmail, data.nextOfKinContactPhone), `${mentalHealthBasePath}/next-of-kin-contact`)
     addMentalHealthSummaryRow(personRows, 'Next of kin relationship', data.nextOfKinRelationship, `${mentalHealthBasePath}/next-of-kin-contact`)
   }
 
@@ -1420,11 +1459,7 @@ function getMentalHealthSummarySections(data) {
 
   if (data.hasAdvocate === 'Yes') {
     addMentalHealthSummaryRow(personRows, 'Advocate details', `${data.advocateFirstName || ''} ${data.advocateLastName || ''}`.trim(), `${mentalHealthBasePath}/advocate-details`)
-    addMentalHealthSummaryRow(personRows, 'Advocate contact methods', [
-      ...(data.advocateContactMethods || []),
-      data.advocateContactEmail && `Email: ${data.advocateContactEmail}`,
-      data.advocateContactPhone && `Phone: ${data.advocateContactPhone}`
-    ], `${mentalHealthBasePath}/advocate-details`)
+    addMentalHealthSummaryRow(personRows, 'Advocate contact methods', getMentalHealthContactSummaryValues(data.advocateContactMethods, data.advocateContactEmail, data.advocateContactPhone), `${mentalHealthBasePath}/advocate-details`)
   }
 
   addMentalHealthSummaryRow(personRows, 'NHS number known', data.knowsNhsNumber, `${mentalHealthBasePath}/identifiers`)
@@ -1457,12 +1492,12 @@ function getMentalHealthSummarySections(data) {
     addMentalHealthSummaryRow(needsRows, 'Reasonable adjustments details', data.reasonableAdjustmentsDetails, `${mentalHealthBasePath}/communication-needs`)
   }
 
-  if (data.mentalHealthConditionsCheck === mentalHealthConfirmedDiagnosisAnswer) {
+  if (hasConfirmedMentalHealthCondition(data)) {
     addMentalHealthSummaryRow(needsRows, 'Confirmed diagnosis details', data.confirmedDiagnosisDetails, `${mentalHealthBasePath}/mental-health-conditions`)
   }
 
-  if (data.mentalHealthConditionsCheck === mentalHealthSuspectedConditionsAnswer) {
-    addMentalHealthSummaryRow(needsRows, 'Suspected condition details', data.suspectedConditionsDetails, `${mentalHealthBasePath}/mental-health-conditions`)
+  if (hasSuspectedMentalHealthCondition(data)) {
+    addMentalHealthSummaryRow(needsRows, 'Suspected condition details', data.suspectedConditionsDetails, `${mentalHealthBasePath}/suspected-mental-health-conditions`)
   }
 
   addMentalHealthSummaryRow(needsRows, 'Professionals involved', data.clinicalProfessionalsInvolved, `${mentalHealthBasePath}/clinical-professionals`)
@@ -1903,10 +1938,13 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
     return res.redirect(`${mentalHealthBasePath}/current-risks`)
   }
 
-  if (
-    page.slug === 'mental-health-conditions' &&
-    ![mentalHealthConfirmedDiagnosisAnswer, mentalHealthSuspectedConditionsAnswer].includes(req.session.data.mentalHealthConditionsCheck)
-  ) {
+  if (page.slug === 'mental-health-conditions' && !hasConfirmedMentalHealthCondition(req.session.data)) {
+    return hasSuspectedMentalHealthCondition(req.session.data)
+      ? res.redirect(`${mentalHealthBasePath}/suspected-mental-health-conditions`)
+      : res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
+  }
+
+  if (page.slug === 'suspected-mental-health-conditions' && !hasSuspectedMentalHealthCondition(req.session.data)) {
     return res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
   }
 
@@ -1943,10 +1981,13 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
     return res.redirect(`${mentalHealthBasePath}/current-risks`)
   }
 
-  if (
-    page.slug === 'mental-health-conditions' &&
-    ![mentalHealthConfirmedDiagnosisAnswer, mentalHealthSuspectedConditionsAnswer].includes(req.session.data.mentalHealthConditionsCheck)
-  ) {
+  if (page.slug === 'mental-health-conditions' && !hasConfirmedMentalHealthCondition(req.session.data)) {
+    return hasSuspectedMentalHealthCondition(req.session.data)
+      ? res.redirect(`${mentalHealthBasePath}/suspected-mental-health-conditions`)
+      : res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
+  }
+
+  if (page.slug === 'suspected-mental-health-conditions' && !hasSuspectedMentalHealthCondition(req.session.data)) {
     return res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
   }
 
@@ -1983,7 +2024,8 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
 
   storeMentalHealthPageAnswers(pageForRequest, values, req.session.data)
 
-  if (page.slug === 'mental-health-conditions-check' && req.session.data.mentalHealthConditionsCheck === mentalHealthNoConditionsAnswer) {
+  if (page.slug === 'mental-health-conditions-check' && hasNoMentalHealthCondition(req.session.data)) {
+    req.session.data.mentalHealthConditionsCheck = [mentalHealthNoConditionsAnswer]
     req.session.data.confirmedDiagnosisDetails = ''
     req.session.data.suspectedConditionsDetails = ''
     req.session.data.hasConfirmedDiagnosis = ''
@@ -1993,21 +2035,12 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   }
 
   if (page.slug === 'mental-health-conditions-check') {
-    if (req.session.data.mentalHealthConditionsCheck === mentalHealthConfirmedDiagnosisAnswer) {
-      req.session.data.suspectedConditionsDetails = ''
-    } else if (req.session.data.mentalHealthConditionsCheck === mentalHealthSuspectedConditionsAnswer) {
+    if (!hasConfirmedMentalHealthCondition(req.session.data)) {
       req.session.data.confirmedDiagnosisDetails = ''
     }
 
-    req.session.data.hasConfirmedDiagnosis = ''
-    req.session.data.hasSuspectedConditions = ''
-  }
-
-  if (page.slug === 'mental-health-conditions') {
-    if (req.session.data.mentalHealthConditionsCheck === mentalHealthConfirmedDiagnosisAnswer) {
+    if (!hasSuspectedMentalHealthCondition(req.session.data)) {
       req.session.data.suspectedConditionsDetails = ''
-    } else if (req.session.data.mentalHealthConditionsCheck === mentalHealthSuspectedConditionsAnswer) {
-      req.session.data.confirmedDiagnosisDetails = ''
     }
 
     req.session.data.hasConfirmedDiagnosis = ''
