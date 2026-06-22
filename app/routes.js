@@ -78,16 +78,10 @@ const mentalHealthPages = [
     title: 'What’s your relationship to the person you’re referring?',
     fields: [
       {
-        type: 'select',
+        type: 'text',
         name: 'relationshipToPerson',
         label: 'What’s your relationship to the person you’re referring?',
-        error: 'Select your relationship to the person you’re referring',
-        items: [
-          'GP or other primary care professional',
-          'NHS mental health professional',
-          'Housing or homelessness professional',
-          'Voluntary or community sector worker'
-        ]
+        error: 'Enter your relationship to the person you’re referring'
       }
     ]
   },
