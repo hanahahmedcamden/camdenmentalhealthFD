@@ -1409,15 +1409,12 @@ function getMentalHealthContactSummaryValues(methods, email, phone) {
 
 function getMentalHealthSummarySections(data) {
   const sections = []
-  const referralDetailsRows = addMentalHealthSummarySection(sections, 'Referral details')
   const yourDetailsRows = addMentalHealthSummarySection(sections, 'Your details')
   const personRows = addMentalHealthSummarySection(sections, 'About the person you’re referring')
   const needsRows = addMentalHealthSummarySection(sections, 'Health, communication and care needs')
   const safetyRows = addMentalHealthSummarySection(sections, 'Safety and risks')
   const reasonRows = addMentalHealthSummarySection(sections, 'Reason for referral')
   const firstContactRows = addMentalHealthSummarySection(sections, 'First contact')
-
-  addMentalHealthSummaryRow(referralDetailsRows, 'Mental health conditions', data.mentalHealthConditionsCheck, `${mentalHealthBasePath}/mental-health-conditions-check`)
 
   addMentalHealthSummaryRow(yourDetailsRows, 'Your name', `${data.referrerFirstName || ''} ${data.referrerLastName || ''}`.trim(), `${mentalHealthBasePath}/your-details`)
   addMentalHealthSummaryRow(yourDetailsRows, 'Job title', data.referrerJobTitle, `${mentalHealthBasePath}/your-details`)
@@ -1485,6 +1482,8 @@ function getMentalHealthSummarySections(data) {
   if (data.needsReasonableAdjustments === 'Yes') {
     addMentalHealthSummaryRow(needsRows, 'Reasonable adjustments details', data.reasonableAdjustmentsDetails, `${mentalHealthBasePath}/communication-needs`)
   }
+
+  addMentalHealthSummaryRow(needsRows, 'Mental health conditions', data.mentalHealthConditionsCheck, `${mentalHealthBasePath}/mental-health-conditions-check`)
 
   if (hasConfirmedMentalHealthCondition(data)) {
     addMentalHealthSummaryRow(needsRows, 'Confirmed diagnosis details', data.confirmedDiagnosisDetails, `${mentalHealthBasePath}/mental-health-conditions`)
