@@ -391,8 +391,7 @@ const mentalHealthPages = [
           { type: 'text', name: 'clinicalProfessional1FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
           { type: 'text', name: 'clinicalProfessional1LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
           { type: 'text', name: 'clinicalProfessional1JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional1Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
-          { type: 'email', name: 'clinicalProfessional1Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' }
+          { type: 'text', name: 'clinicalProfessional1Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
         ]
       },
       {
@@ -404,8 +403,7 @@ const mentalHealthPages = [
           { type: 'text', name: 'clinicalProfessional2FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
           { type: 'text', name: 'clinicalProfessional2LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
           { type: 'text', name: 'clinicalProfessional2JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional2Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
-          { type: 'email', name: 'clinicalProfessional2Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' }
+          { type: 'text', name: 'clinicalProfessional2Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
         ]
       },
       {
@@ -417,8 +415,7 @@ const mentalHealthPages = [
           { type: 'text', name: 'clinicalProfessional3FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
           { type: 'text', name: 'clinicalProfessional3LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
           { type: 'text', name: 'clinicalProfessional3JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional3Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
-          { type: 'email', name: 'clinicalProfessional3Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' }
+          { type: 'text', name: 'clinicalProfessional3Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
         ]
       },
       {
@@ -430,8 +427,7 @@ const mentalHealthPages = [
           { type: 'text', name: 'clinicalProfessional4FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
           { type: 'text', name: 'clinicalProfessional4LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
           { type: 'text', name: 'clinicalProfessional4JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional4Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
-          { type: 'email', name: 'clinicalProfessional4Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' }
+          { type: 'text', name: 'clinicalProfessional4Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
         ]
       },
       {
@@ -443,8 +439,7 @@ const mentalHealthPages = [
           { type: 'text', name: 'clinicalProfessional5FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
           { type: 'text', name: 'clinicalProfessional5LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
           { type: 'text', name: 'clinicalProfessional5JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional5Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
-          { type: 'email', name: 'clinicalProfessional5Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' }
+          { type: 'text', name: 'clinicalProfessional5Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
         ]
       }
     ]
@@ -906,8 +901,7 @@ function getClinicalProfessionalSummary(index, data) {
   return [
     `${data[`clinicalProfessional${index}FirstName`] || ''} ${data[`clinicalProfessional${index}LastName`] || ''}`.trim(),
     data[`clinicalProfessional${index}JobTitle`],
-    data[`clinicalProfessional${index}Organisation`],
-    data[`clinicalProfessional${index}Email`]
+    data[`clinicalProfessional${index}Organisation`]
   ].filter(Boolean)
 }
 
@@ -926,8 +920,7 @@ function getClinicalProfessionalEntry(index, data = {}) {
     firstName: data[`clinicalProfessional${index}FirstName`] || '',
     lastName: data[`clinicalProfessional${index}LastName`] || '',
     jobTitle: data[`clinicalProfessional${index}JobTitle`] || '',
-    organisation: data[`clinicalProfessional${index}Organisation`] || '',
-    email: data[`clinicalProfessional${index}Email`] || ''
+    organisation: data[`clinicalProfessional${index}Organisation`] || ''
   }
 }
 
@@ -948,13 +941,12 @@ function normaliseClinicalProfessionalEntry(body) {
     firstName: normaliseText(body.firstName),
     lastName: normaliseText(body.lastName),
     jobTitle: normaliseText(body.jobTitle),
-    organisation: normaliseText(body.organisation),
-    email: normaliseText(body.email)
+    organisation: normaliseText(body.organisation)
   }
 }
 
 function hasClinicalProfessionalEntry(entry) {
-  return Boolean(entry.firstName || entry.lastName || entry.jobTitle || entry.organisation || entry.email)
+  return Boolean(entry.firstName || entry.lastName || entry.jobTitle || entry.organisation)
 }
 
 function storeClinicalProfessionalEntries(data, entries) {
@@ -967,7 +959,6 @@ function storeClinicalProfessionalEntries(data, entries) {
     data[`clinicalProfessional${index}LastName`] = entry.lastName || ''
     data[`clinicalProfessional${index}JobTitle`] = entry.jobTitle || ''
     data[`clinicalProfessional${index}Organisation`] = entry.organisation || ''
-    data[`clinicalProfessional${index}Email`] = entry.email || ''
   })
 
   data.clinicalProfessionalCount = Math.max(entries.length, 1)
