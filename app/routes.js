@@ -61,7 +61,7 @@ const mentalHealthPages = [
     fields: [
       { type: 'text', name: 'referrerFirstName', label: 'First name', error: 'Enter your first name', autocomplete: 'given-name' },
       { type: 'text', name: 'referrerLastName', label: 'Last name', error: 'Enter your last name', autocomplete: 'family-name' },
-      { type: 'text', name: 'referrerJobTitle', label: 'Job title', error: 'Enter your job title', autocomplete: 'organization-title' },
+      { type: 'text', name: 'referrerJobTitle', label: 'Relationship to the person you’re referring', error: 'Enter your relationship to the person you’re referring' },
       { type: 'text', name: 'referrerOrganisation', label: 'Organisation or team', error: 'Enter your organisation or team', autocomplete: 'organization' }
     ]
   },
@@ -71,18 +71,6 @@ const mentalHealthPages = [
     fields: [
       { type: 'email', name: 'referrerEmail', label: 'Email address', error: 'Enter your email address', autocomplete: 'email' },
       { type: 'tel', name: 'referrerPhone', label: 'Phone number', error: 'Enter your phone number', autocomplete: 'tel' }
-    ]
-  },
-  {
-    slug: 'relationship',
-    title: 'What’s your relationship to the person you’re referring?',
-    fields: [
-      {
-        type: 'text',
-        name: 'relationshipToPerson',
-        label: 'What’s your relationship to the person you’re referring?',
-        error: 'Enter your relationship to the person you’re referring'
-      }
     ]
   },
   {
@@ -231,6 +219,101 @@ const mentalHealthPages = [
     ]
   },
   {
+    slug: 'clinical-professionals',
+    title: 'Are any other professionals currently involved in their care?',
+    fields: [
+      {
+        type: 'radios',
+        name: 'clinicalProfessionalsInvolved',
+        label: 'Are any other professionals currently involved in their care?',
+        error: 'Select whether any other professionals are currently involved in their care',
+        items: ['Yes', 'No']
+      }
+    ]
+  },
+  {
+    slug: 'clinical-professional-details',
+    title: 'Details of the professionals',
+    hint: 'Tell us their details, if you know them.',
+    repeatableFieldsets: {
+      countName: 'clinicalProfessionalCount',
+      max: mentalHealthClinicalProfessionalMax,
+      addButtonText: 'Add another professional'
+    },
+    fields: [
+      {
+        type: 'fieldset',
+        repeatIndex: 1,
+        legend: 'Professional 1',
+        optional: true,
+        fields: [
+          { type: 'text', name: 'clinicalProfessional1FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
+          { type: 'text', name: 'clinicalProfessional1LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
+          { type: 'text', name: 'clinicalProfessional1JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
+          { type: 'text', name: 'clinicalProfessional1Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
+          { type: 'email', name: 'clinicalProfessional1Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' },
+          { type: 'tel', name: 'clinicalProfessional1Phone', label: 'Phone number', error: 'Enter the professional’s phone number', autocomplete: 'tel' }
+        ]
+      },
+      {
+        type: 'fieldset',
+        repeatIndex: 2,
+        legend: 'Professional 2',
+        optional: true,
+        fields: [
+          { type: 'text', name: 'clinicalProfessional2FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
+          { type: 'text', name: 'clinicalProfessional2LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
+          { type: 'text', name: 'clinicalProfessional2JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
+          { type: 'text', name: 'clinicalProfessional2Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
+          { type: 'email', name: 'clinicalProfessional2Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' },
+          { type: 'tel', name: 'clinicalProfessional2Phone', label: 'Phone number', error: 'Enter the professional’s phone number', autocomplete: 'tel' }
+        ]
+      },
+      {
+        type: 'fieldset',
+        repeatIndex: 3,
+        legend: 'Professional 3',
+        optional: true,
+        fields: [
+          { type: 'text', name: 'clinicalProfessional3FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
+          { type: 'text', name: 'clinicalProfessional3LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
+          { type: 'text', name: 'clinicalProfessional3JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
+          { type: 'text', name: 'clinicalProfessional3Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
+          { type: 'email', name: 'clinicalProfessional3Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' },
+          { type: 'tel', name: 'clinicalProfessional3Phone', label: 'Phone number', error: 'Enter the professional’s phone number', autocomplete: 'tel' }
+        ]
+      },
+      {
+        type: 'fieldset',
+        repeatIndex: 4,
+        legend: 'Professional 4',
+        optional: true,
+        fields: [
+          { type: 'text', name: 'clinicalProfessional4FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
+          { type: 'text', name: 'clinicalProfessional4LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
+          { type: 'text', name: 'clinicalProfessional4JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
+          { type: 'text', name: 'clinicalProfessional4Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
+          { type: 'email', name: 'clinicalProfessional4Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' },
+          { type: 'tel', name: 'clinicalProfessional4Phone', label: 'Phone number', error: 'Enter the professional’s phone number', autocomplete: 'tel' }
+        ]
+      },
+      {
+        type: 'fieldset',
+        repeatIndex: 5,
+        legend: 'Professional 5',
+        optional: true,
+        fields: [
+          { type: 'text', name: 'clinicalProfessional5FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
+          { type: 'text', name: 'clinicalProfessional5LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
+          { type: 'text', name: 'clinicalProfessional5JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
+          { type: 'text', name: 'clinicalProfessional5Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' },
+          { type: 'email', name: 'clinicalProfessional5Email', label: 'Email address', error: 'Enter the professional’s email address', autocomplete: 'email' },
+          { type: 'tel', name: 'clinicalProfessional5Phone', label: 'Phone number', error: 'Enter the professional’s phone number', autocomplete: 'tel' }
+        ]
+      }
+    ]
+  },
+  {
     slug: 'identifiers',
     title: 'Do you know their NHS number?',
     fields: [
@@ -251,13 +334,13 @@ const mentalHealthPages = [
   },
   {
     slug: 'referral-awareness',
-    title: 'Does the person you’re referring consent to this?',
+    title: 'Does the person you’re referring consent to this referral?',
     fields: [
       {
         type: 'radios',
         name: 'personConsentsReferral',
-        label: 'Does the person you’re referring consent to this?',
-        error: 'Select whether the person you’re referring consents to this',
+        label: 'Does the person you’re referring consent to this referral?',
+        error: 'Select whether the person you’re referring consents to this referral',
         items: ['Yes', 'No']
       }
     ]
@@ -277,6 +360,17 @@ const mentalHealthPages = [
           'There’s a safeguarding concern',
           'Other'
         ],
+        conditionals: {
+          'The person finds it difficult to understand and give consent': [
+            { type: 'textarea', name: 'consentDifficultyDetails', label: 'Give us more detail, if you can', optional: true }
+          ],
+          'The person refused to give consent': [
+            { type: 'textarea', name: 'consentRefusedDetails', label: 'Give us more detail, if you can', optional: true }
+          ],
+          'There’s a safeguarding concern': [
+            { type: 'textarea', name: 'consentSafeguardingConcernDetails', label: 'Give us more detail, if you can', optional: true }
+          ]
+        },
         conditional: {
           value: 'Other',
           fields: [
@@ -356,91 +450,6 @@ const mentalHealthPages = [
         name: 'suspectedConditionsDetails',
         label: 'Give more detail about this',
         error: 'Give more detail about their suspected mental health conditions'
-      }
-    ]
-  },
-  {
-    slug: 'clinical-professionals',
-    title: 'Are any other professionals currently involved in their care?',
-    fields: [
-      {
-        type: 'radios',
-        name: 'clinicalProfessionalsInvolved',
-        label: 'Are any other professionals currently involved in their care?',
-        error: 'Select whether any other professionals are currently involved in their care',
-        items: ['Yes', 'No']
-      }
-    ]
-  },
-  {
-    slug: 'clinical-professional-details',
-    title: 'Details of the professionals',
-    hint: 'Tell us their details, if you know them.',
-    repeatableFieldsets: {
-      countName: 'clinicalProfessionalCount',
-      max: mentalHealthClinicalProfessionalMax,
-      addButtonText: 'Add another professional'
-    },
-    fields: [
-      {
-        type: 'fieldset',
-        repeatIndex: 1,
-        legend: 'Professional 1',
-        optional: true,
-        fields: [
-          { type: 'text', name: 'clinicalProfessional1FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
-          { type: 'text', name: 'clinicalProfessional1LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
-          { type: 'text', name: 'clinicalProfessional1JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional1Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
-        ]
-      },
-      {
-        type: 'fieldset',
-        repeatIndex: 2,
-        legend: 'Professional 2',
-        optional: true,
-        fields: [
-          { type: 'text', name: 'clinicalProfessional2FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
-          { type: 'text', name: 'clinicalProfessional2LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
-          { type: 'text', name: 'clinicalProfessional2JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional2Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
-        ]
-      },
-      {
-        type: 'fieldset',
-        repeatIndex: 3,
-        legend: 'Professional 3',
-        optional: true,
-        fields: [
-          { type: 'text', name: 'clinicalProfessional3FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
-          { type: 'text', name: 'clinicalProfessional3LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
-          { type: 'text', name: 'clinicalProfessional3JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional3Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
-        ]
-      },
-      {
-        type: 'fieldset',
-        repeatIndex: 4,
-        legend: 'Professional 4',
-        optional: true,
-        fields: [
-          { type: 'text', name: 'clinicalProfessional4FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
-          { type: 'text', name: 'clinicalProfessional4LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
-          { type: 'text', name: 'clinicalProfessional4JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional4Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
-        ]
-      },
-      {
-        type: 'fieldset',
-        repeatIndex: 5,
-        legend: 'Professional 5',
-        optional: true,
-        fields: [
-          { type: 'text', name: 'clinicalProfessional5FirstName', label: 'First name', error: 'Enter the professional’s first name', autocomplete: 'given-name' },
-          { type: 'text', name: 'clinicalProfessional5LastName', label: 'Last name', error: 'Enter the professional’s last name', autocomplete: 'family-name' },
-          { type: 'text', name: 'clinicalProfessional5JobTitle', label: 'Job title', error: 'Enter the professional’s job title', autocomplete: 'organization-title' },
-          { type: 'text', name: 'clinicalProfessional5Organisation', label: 'Organisation or team', error: 'Enter the professional’s organisation or team', autocomplete: 'organization' }
-        ]
       }
     ]
   },
@@ -621,11 +630,11 @@ const mentalHealthTotalPages = mentalHealthStartPageCount + mentalHealthPages.le
 
 const mentalHealthSections = [
   { title: 'Referral details', start: 2, end: 2 },
-  { title: 'Your details', start: 3, end: 5 },
-  { title: 'About the person you’re referring', start: 6, end: 17 },
-  { title: 'Health, communication and care needs', start: 18, end: 22 },
-  { title: 'Safety and risks', start: 23, end: 28 },
-  { title: 'Reason for referral', start: 29, end: 30 }
+  { title: 'Your details', start: 3, end: 4 },
+  { title: 'About the person you’re referring', start: 5, end: 16 },
+  { title: 'Health, communication and care needs', start: 17, end: 21 },
+  { title: 'Safety and risks', start: 22, end: 27 },
+  { title: 'Reason for referral', start: 28, end: 29 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -869,7 +878,8 @@ function getClinicalProfessionalFieldNames(index) {
     `clinicalProfessional${index}LastName`,
     `clinicalProfessional${index}JobTitle`,
     `clinicalProfessional${index}Organisation`,
-    `clinicalProfessional${index}Email`
+    `clinicalProfessional${index}Email`,
+    `clinicalProfessional${index}Phone`
   ]
 }
 
@@ -901,7 +911,9 @@ function getClinicalProfessionalSummary(index, data) {
   return [
     `${data[`clinicalProfessional${index}FirstName`] || ''} ${data[`clinicalProfessional${index}LastName`] || ''}`.trim(),
     data[`clinicalProfessional${index}JobTitle`],
-    data[`clinicalProfessional${index}Organisation`]
+    data[`clinicalProfessional${index}Organisation`],
+    data[`clinicalProfessional${index}Email`],
+    data[`clinicalProfessional${index}Phone`]
   ].filter(Boolean)
 }
 
@@ -920,7 +932,9 @@ function getClinicalProfessionalEntry(index, data = {}) {
     firstName: data[`clinicalProfessional${index}FirstName`] || '',
     lastName: data[`clinicalProfessional${index}LastName`] || '',
     jobTitle: data[`clinicalProfessional${index}JobTitle`] || '',
-    organisation: data[`clinicalProfessional${index}Organisation`] || ''
+    organisation: data[`clinicalProfessional${index}Organisation`] || '',
+    email: data[`clinicalProfessional${index}Email`] || '',
+    phone: data[`clinicalProfessional${index}Phone`] || ''
   }
 }
 
@@ -941,12 +955,14 @@ function normaliseClinicalProfessionalEntry(body) {
     firstName: normaliseText(body.firstName),
     lastName: normaliseText(body.lastName),
     jobTitle: normaliseText(body.jobTitle),
-    organisation: normaliseText(body.organisation)
+    organisation: normaliseText(body.organisation),
+    email: normaliseText(body.email),
+    phone: normaliseText(body.phone)
   }
 }
 
 function hasClinicalProfessionalEntry(entry) {
-  return Boolean(entry.firstName || entry.lastName || entry.jobTitle || entry.organisation)
+  return Boolean(entry.firstName || entry.lastName || entry.jobTitle || entry.organisation || entry.email || entry.phone)
 }
 
 function storeClinicalProfessionalEntries(data, entries) {
@@ -959,6 +975,8 @@ function storeClinicalProfessionalEntries(data, entries) {
     data[`clinicalProfessional${index}LastName`] = entry.lastName || ''
     data[`clinicalProfessional${index}JobTitle`] = entry.jobTitle || ''
     data[`clinicalProfessional${index}Organisation`] = entry.organisation || ''
+    data[`clinicalProfessional${index}Email`] = entry.email || ''
+    data[`clinicalProfessional${index}Phone`] = entry.phone || ''
   })
 
   data.clinicalProfessionalCount = Math.max(entries.length, 1)
@@ -985,12 +1003,12 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/next-of-kin`
   }
 
-  if (page.slug === 'identifiers' && data.hasAdvocate === 'No') {
-    return `${mentalHealthBasePath}/advocate`
+  if (page.slug === 'identifiers' && data.clinicalProfessionalsInvolved !== 'Yes') {
+    return `${mentalHealthBasePath}/clinical-professionals`
   }
 
-  if (page.slug === 'identifiers' && data.hasAdvocate === 'Yes') {
-    return `${mentalHealthBasePath}/advocate-details`
+  if (page.slug === 'identifiers' && data.clinicalProfessionalsInvolved === 'Yes') {
+    return `${mentalHealthBasePath}/clinical-professional-details`
   }
 
   if (page.slug === 'communication-needs' && data.personConsentsReferral === 'Yes') {
@@ -1002,6 +1020,12 @@ function getMentalHealthBackHref(page, data = {}) {
   }
 
   if (page.slug === 'clinical-professionals') {
+    return data.hasAdvocate === 'Yes'
+      ? `${mentalHealthBasePath}/advocate-details`
+      : `${mentalHealthBasePath}/advocate`
+  }
+
+  if (page.slug === 'children') {
     if (hasSuspectedMentalHealthCondition(data)) {
       return `${mentalHealthBasePath}/suspected-mental-health-conditions`
     }
@@ -1009,14 +1033,8 @@ function getMentalHealthBackHref(page, data = {}) {
     if (hasConfirmedMentalHealthCondition(data)) {
       return `${mentalHealthBasePath}/mental-health-conditions`
     }
-  }
 
-  if (page.slug === 'children') {
-    if (data.clinicalProfessionalsInvolved !== 'Yes') {
-      return `${mentalHealthBasePath}/clinical-professionals`
-    }
-
-    return `${mentalHealthBasePath}/clinical-professional-details`
+    return `${mentalHealthBasePath}/communication-needs`
   }
 
   if (page.slug === 'violence-or-aggression' && ['No', 'Unknown'].includes(data.livesWithChildren)) {
@@ -1051,11 +1069,11 @@ function getMentalHealthNextHref(page, data = {}) {
   }
 
   if (page.slug === 'advocate' && data.hasAdvocate === 'No') {
-    return `${mentalHealthBasePath}/identifiers`
+    return `${mentalHealthBasePath}/clinical-professionals`
   }
 
   if (page.slug === 'advocate-details') {
-    return `${mentalHealthBasePath}/identifiers`
+    return `${mentalHealthBasePath}/clinical-professionals`
   }
 
   if (page.slug === 'referral-awareness') {
@@ -1073,27 +1091,27 @@ function getMentalHealthNextHref(page, data = {}) {
       return `${mentalHealthBasePath}/suspected-mental-health-conditions`
     }
 
-    return `${mentalHealthBasePath}/clinical-professionals`
+    return `${mentalHealthBasePath}/children`
   }
 
   if (page.slug === 'mental-health-conditions') {
     return hasSuspectedMentalHealthCondition(data)
       ? `${mentalHealthBasePath}/suspected-mental-health-conditions`
-      : `${mentalHealthBasePath}/clinical-professionals`
+      : `${mentalHealthBasePath}/children`
   }
 
   if (page.slug === 'suspected-mental-health-conditions') {
-    return `${mentalHealthBasePath}/clinical-professionals`
+    return `${mentalHealthBasePath}/children`
   }
 
   if (page.slug === 'clinical-professionals') {
     return data.clinicalProfessionalsInvolved === 'Yes'
       ? `${mentalHealthBasePath}/clinical-professional-details`
-      : `${mentalHealthBasePath}/children`
+      : `${mentalHealthBasePath}/identifiers`
   }
 
   if (page.slug === 'clinical-professional-details') {
-    return `${mentalHealthBasePath}/children`
+    return `${mentalHealthBasePath}/identifiers`
   }
 
   if (page.slug === 'children') {
@@ -1129,6 +1147,22 @@ function getMentalHealthNextHref(page, data = {}) {
   return nextPage ? `${mentalHealthBasePath}/${nextPage.slug}` : `${mentalHealthBasePath}/check-answers`
 }
 
+function getMentalHealthConditionalConfigs(field) {
+  const conditionals = []
+
+  if (field.conditional) {
+    conditionals.push(field.conditional)
+  }
+
+  if (field.conditionals) {
+    Object.entries(field.conditionals).forEach(([value, fields]) => {
+      conditionals.push({ value, fields })
+    })
+  }
+
+  return conditionals
+}
+
 function normaliseMentalHealthField(field, body, values) {
   if (field.type === 'fieldset') {
     field.fields.forEach((nestedField) => {
@@ -1148,11 +1182,11 @@ function normaliseMentalHealthField(field, body, values) {
     const selectedItems = asArray(body[field.name])
     values[field.name] = field.items ? selectedItems.filter((item) => field.items.includes(item)) : selectedItems
 
-    if (field.conditional) {
-      field.conditional.fields.forEach((conditionalField) => {
+    getMentalHealthConditionalConfigs(field).forEach((conditional) => {
+      conditional.fields.forEach((conditionalField) => {
         normaliseMentalHealthField(conditionalField, body, values)
       })
-    }
+    })
 
     return
   }
@@ -1176,11 +1210,11 @@ function normaliseMentalHealthField(field, body, values) {
 
   values[field.name] = normaliseText(body[field.name])
 
-  if (field.conditional) {
-    field.conditional.fields.forEach((conditionalField) => {
+  getMentalHealthConditionalConfigs(field).forEach((conditional) => {
+    conditional.fields.forEach((conditionalField) => {
       normaliseMentalHealthField(conditionalField, body, values)
     })
-  }
+  })
 }
 
 function normaliseMentalHealthBody(page, body) {
@@ -1235,9 +1269,13 @@ function validateMentalHealthField(field, values, errors) {
       errors[field.name] = field.error
     } else if (field.exclusive && values[field.name].includes(field.exclusive) && values[field.name].length > 1) {
       errors[field.name] = field.exclusiveError
-    } else if (field.conditional && values[field.name].includes(field.conditional.value)) {
-      field.conditional.fields.forEach((conditionalField) => {
-        validateMentalHealthField(conditionalField, values, errors)
+    } else {
+      getMentalHealthConditionalConfigs(field).forEach((conditional) => {
+        if (values[field.name].includes(conditional.value)) {
+          conditional.fields.forEach((conditionalField) => {
+            validateMentalHealthField(conditionalField, values, errors)
+          })
+        }
       })
     }
 
@@ -1269,16 +1307,22 @@ function validateMentalHealthField(field, values, errors) {
   }
 
   if (!values[field.name]) {
+    if (field.optional) {
+      return
+    }
+
     errors[field.name] = field.error
   } else if (field.numericOnly && !/^[0-9]+$/.test(values[field.name])) {
     errors[field.name] = field.numericError || `${field.label} must only include numbers`
   }
 
-  if (field.conditional && values[field.name] === field.conditional.value) {
-    field.conditional.fields.forEach((conditionalField) => {
-      validateMentalHealthField(conditionalField, values, errors)
-    })
-  }
+  getMentalHealthConditionalConfigs(field).forEach((conditional) => {
+    if (values[field.name] === conditional.value) {
+      conditional.fields.forEach((conditionalField) => {
+        validateMentalHealthField(conditionalField, values, errors)
+      })
+    }
+  })
 }
 
 function validateMentalHealthPage(page, values) {
@@ -1289,6 +1333,18 @@ function validateMentalHealthPage(page, values) {
   })
 
   return errors
+}
+
+function clearMentalHealthField(field, sessionData) {
+  if (field.type === 'contactDetails') {
+    sessionData[field.name] = []
+    sessionData[field.emailName] = ''
+    sessionData[field.phoneName] = ''
+  } else if (field.type === 'checkboxGroup') {
+    sessionData[field.name] = []
+  } else {
+    sessionData[field.name] = ''
+  }
 }
 
 function storeMentalHealthField(field, values, sessionData) {
@@ -1313,21 +1369,15 @@ function storeMentalHealthField(field, values, sessionData) {
   if (field.type === 'checkboxGroup') {
     sessionData[field.name] = values[field.name] || []
 
-    if (field.conditional) {
-      field.conditional.fields.forEach((conditionalField) => {
-        if (sessionData[field.name].includes(field.conditional.value)) {
+    getMentalHealthConditionalConfigs(field).forEach((conditional) => {
+      conditional.fields.forEach((conditionalField) => {
+        if (sessionData[field.name].includes(conditional.value)) {
           storeMentalHealthField(conditionalField, values, sessionData)
-        } else if (conditionalField.type === 'contactDetails') {
-          sessionData[conditionalField.name] = []
-          sessionData[conditionalField.emailName] = ''
-          sessionData[conditionalField.phoneName] = ''
-        } else if (conditionalField.type === 'checkboxGroup') {
-          sessionData[conditionalField.name] = []
         } else {
-          sessionData[conditionalField.name] = ''
+          clearMentalHealthField(conditionalField, sessionData)
         }
       })
-    }
+    })
 
     return
   }
@@ -1353,21 +1403,15 @@ function storeMentalHealthField(field, values, sessionData) {
 
   sessionData[field.name] = values[field.name]
 
-  if (field.conditional) {
-    field.conditional.fields.forEach((conditionalField) => {
-      if (values[field.name] === field.conditional.value) {
+  getMentalHealthConditionalConfigs(field).forEach((conditional) => {
+    conditional.fields.forEach((conditionalField) => {
+      if (values[field.name] === conditional.value) {
         storeMentalHealthField(conditionalField, values, sessionData)
-      } else if (conditionalField.type === 'contactDetails') {
-        sessionData[conditionalField.name] = []
-        sessionData[conditionalField.emailName] = ''
-        sessionData[conditionalField.phoneName] = ''
-      } else if (conditionalField.type === 'checkboxGroup') {
-        sessionData[conditionalField.name] = []
       } else {
-        sessionData[conditionalField.name] = ''
+        clearMentalHealthField(conditionalField, sessionData)
       }
     })
-  }
+  })
 }
 
 function storeMentalHealthPageAnswers(page, values, sessionData) {
@@ -1418,10 +1462,9 @@ function getMentalHealthSummarySections(data) {
   const firstContactRows = addMentalHealthSummarySection(sections, 'First contact')
 
   addMentalHealthSummaryRow(yourDetailsRows, 'Your name', `${data.referrerFirstName || ''} ${data.referrerLastName || ''}`.trim(), `${mentalHealthBasePath}/your-details`)
-  addMentalHealthSummaryRow(yourDetailsRows, 'Job title', data.referrerJobTitle, `${mentalHealthBasePath}/your-details`)
+  addMentalHealthSummaryRow(yourDetailsRows, 'Relationship to the person you’re referring', data.referrerJobTitle, `${mentalHealthBasePath}/your-details`)
   addMentalHealthSummaryRow(yourDetailsRows, 'Organisation or team', data.referrerOrganisation, `${mentalHealthBasePath}/your-details`)
   addMentalHealthSummaryRow(yourDetailsRows, 'Your contact details', [data.referrerEmail, data.referrerPhone], `${mentalHealthBasePath}/your-contact-details`)
-  addMentalHealthSummaryRow(yourDetailsRows, 'Your relationship to them', data.relationshipToPerson, `${mentalHealthBasePath}/relationship`)
   addMentalHealthSummaryRow(personRows, 'Person being referred', `${data.personFirstName || ''} ${data.personLastName || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
   addMentalHealthSummaryRow(personRows, 'Date of birth', `${data.personDateOfBirthDay || ''} ${data.personDateOfBirthMonth || ''} ${data.personDateOfBirthYear || ''}`.trim(), `${mentalHealthBasePath}/person-details`)
   addMentalHealthSummaryRow(personRows, 'Sex', data.personSex, `${mentalHealthBasePath}/person-details`)
@@ -1464,6 +1507,18 @@ function getMentalHealthSummarySections(data) {
 
   if (data.personConsentsReferral === 'No') {
     addMentalHealthSummaryRow(personRows, 'Why consent was not given', data.consentNotGivenReason, `${mentalHealthBasePath}/consent-not-given`)
+
+    if (data.consentDifficultyDetails) {
+      addMentalHealthSummaryRow(personRows, 'Consent details', data.consentDifficultyDetails, `${mentalHealthBasePath}/consent-not-given`)
+    }
+
+    if (data.consentRefusedDetails) {
+      addMentalHealthSummaryRow(personRows, 'Consent details', data.consentRefusedDetails, `${mentalHealthBasePath}/consent-not-given`)
+    }
+
+    if (data.consentSafeguardingConcernDetails) {
+      addMentalHealthSummaryRow(personRows, 'Consent details', data.consentSafeguardingConcernDetails, `${mentalHealthBasePath}/consent-not-given`)
+    }
 
     if (data.consentNotGivenReason === 'Other') {
       addMentalHealthSummaryRow(personRows, 'Consent details', data.consentNotGivenOtherDetails, `${mentalHealthBasePath}/consent-not-given`)
@@ -1561,7 +1616,7 @@ function getClinicalProfessionalNextPageHref(req) {
     return `${mentalHealthBasePath}/check-answers`
   }
 
-  return `${mentalHealthBasePath}/children`
+  return `${mentalHealthBasePath}/identifiers`
 }
 
 function renderClinicalProfessionalForm(req, res, options = {}) {
@@ -2065,6 +2120,9 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
 
   if (page.slug === 'referral-awareness' && req.session.data.personConsentsReferral === 'Yes') {
     req.session.data.consentNotGivenReason = ''
+    req.session.data.consentDifficultyDetails = ''
+    req.session.data.consentRefusedDetails = ''
+    req.session.data.consentSafeguardingConcernDetails = ''
     req.session.data.consentNotGivenOtherDetails = ''
   }
 
