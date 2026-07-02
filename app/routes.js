@@ -431,24 +431,22 @@ const mentalHealthPages = [
   },
   {
     slug: 'mental-health-conditions',
-    title: 'You’ve told us they have mental health conditions with a confirmed diagnosis',
+    title: 'Mental health conditions',
     fields: [
       {
         type: 'textarea',
         name: 'confirmedDiagnosisDetails',
-        label: 'Give more detail about this',
+        label: 'You’ve told us they have mental health conditions with a confirmed diagnosis',
+        labelClasses: 'govuk-label--m',
+        hint: 'Give more detail about this',
         error: 'Give more detail about their mental health conditions with a confirmed diagnosis'
-      }
-    ]
-  },
-  {
-    slug: 'suspected-mental-health-conditions',
-    title: 'You’ve told us they have suspected mental health conditions',
-    fields: [
+      },
       {
         type: 'textarea',
         name: 'suspectedConditionsDetails',
-        label: 'Give more detail about this',
+        label: 'You’ve told us they have suspected mental health conditions',
+        labelClasses: 'govuk-label--m',
+        hint: 'Give more detail about this',
         error: 'Give more detail about their suspected mental health conditions'
       }
     ]
@@ -512,7 +510,7 @@ const mentalHealthPages = [
         label: 'Do they have any current risks?',
         hint: 'For example, abuse, self-neglect, hoarding, homelessness or risks to dependents',
         error: 'Select whether they have any current risks',
-        items: ['Yes', 'No', 'I do not know']
+        items: ['Yes', 'No', 'Unknown']
       }
     ]
   },
@@ -544,6 +542,16 @@ const mentalHealthPages = [
           'Risks to dependents (children or vulnerable adults)',
           'Other'
         ],
+        conditionals: {
+          'Hoarding and environmental hazards': [
+            {
+              type: 'textarea',
+              name: 'environmentalRisksDetails',
+              label: 'Tell us what environmental risks there are',
+              error: 'Tell us what environmental risks there are'
+            }
+          ]
+        },
         conditional: {
           value: 'Other',
           fields: [
@@ -553,26 +561,6 @@ const mentalHealthPages = [
               label: 'Tell us what other current risks they have',
               error: 'Tell us what other current risks they have'
             }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    slug: 'environmental-risks',
-    title: 'Are there any environmental risks?',
-    fields: [
-      {
-        type: 'radios',
-        name: 'hasEnvironmentalRisks',
-        label: 'Are there any environmental risks?',
-        hint: 'For example, needle finds, evidence of cuckooing, pets',
-        error: 'Select whether there are any environmental risks',
-        items: ['Yes', 'No'],
-        conditional: {
-          value: 'Yes',
-          fields: [
-            { type: 'textarea', name: 'environmentalRisksDetails', label: 'Tell us what environmental risks there are', error: 'Tell us what environmental risks there are' }
           ]
         }
       }
@@ -627,14 +615,17 @@ const mentalHealthPages = [
 const mentalHealthStartPageCount = 1
 const mentalHealthEndPageCount = 3
 const mentalHealthTotalPages = mentalHealthStartPageCount + mentalHealthPages.length + mentalHealthEndPageCount
+const mentalHealthCheckAnswersPageNumber = mentalHealthTotalPages - 2
+const mentalHealthConfirmationPageNumber = mentalHealthTotalPages - 1
+const mentalHealthSubmissionEmailPageNumber = mentalHealthTotalPages
 
 const mentalHealthSections = [
   { title: 'Referral details', start: 2, end: 2 },
   { title: 'Your details', start: 3, end: 4 },
   { title: 'About the person you’re referring', start: 5, end: 16 },
-  { title: 'Health, communication and care needs', start: 17, end: 21 },
-  { title: 'Safety and risks', start: 22, end: 27 },
-  { title: 'Reason for referral', start: 28, end: 29 }
+  { title: 'Health, communication and care needs', start: 17, end: 20 },
+  { title: 'Safety and risks', start: 21, end: 25 },
+  { title: 'Reason for referral', start: 26, end: 27 }
 ]
 
 function getMentalHealthSectionTitle(pageNumber) {
@@ -689,23 +680,40 @@ function getPreferredContactItems(data = {}) {
 }
 
 function getMentalHealthPageForData(page, data = {}) {
-  if (page.slug !== 'preferred-contact') {
-    return page
+  if (page.slug === 'preferred-contact') {
+    return {
+      ...page,
+      fields: page.fields.map((field) => {
+        if (field.name !== 'preferredContactMethods') {
+          return field
+        }
+
+        return {
+          ...field,
+          items: getPreferredContactItems(data)
+        }
+      })
+    }
   }
 
-  return {
-    ...page,
-    fields: page.fields.map((field) => {
-      if (field.name !== 'preferredContactMethods') {
-        return field
-      }
+  if (page.slug === 'mental-health-conditions') {
+    return {
+      ...page,
+      fields: page.fields.filter((field) => {
+        if (field.name === 'confirmedDiagnosisDetails') {
+          return hasConfirmedMentalHealthCondition(data)
+        }
 
-      return {
-        ...field,
-        items: getPreferredContactItems(data)
-      }
-    })
+        if (field.name === 'suspectedConditionsDetails') {
+          return hasSuspectedMentalHealthCondition(data)
+        }
+
+        return true
+      })
+    }
   }
+
+  return page
 }
 
 function clearPreferredContactMethods(data = {}) {
@@ -747,18 +755,11 @@ const referralReasonFollowUpPages = [
     fields: [
       {
         type: 'textarea',
-        name: 'deepCleanHoardingDetails',
-        label: 'Is there hoarding involved?',
+        name: 'deepCleanIssuesDetails',
+        label: 'Tell us what issues there are',
         labelClasses: 'govuk-label--m',
-        hint: 'If there is, describe the level or scale',
-        error: 'Tell us if there is hoarding involved'
-      },
-      {
-        type: 'textarea',
-        name: 'deepCleanFireSafetyDetails',
-        label: 'Are there risks to health or fire safety?',
-        labelClasses: 'govuk-label--m',
-        error: 'Tell us if there are risks to health or fire safety'
+        hint: 'For example, hoarding, or risks health or fire safety. Give as much detail as you can',
+        error: 'Tell us what issues there are'
       }
     ]
   },
@@ -1015,10 +1016,6 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/referral-awareness`
   }
 
-  if (page.slug === 'suspected-mental-health-conditions' && !hasConfirmedMentalHealthCondition(data)) {
-    return `${mentalHealthBasePath}/communication-needs`
-  }
-
   if (page.slug === 'clinical-professionals') {
     return data.hasAdvocate === 'Yes'
       ? `${mentalHealthBasePath}/advocate-details`
@@ -1026,11 +1023,7 @@ function getMentalHealthBackHref(page, data = {}) {
   }
 
   if (page.slug === 'children') {
-    if (hasSuspectedMentalHealthCondition(data)) {
-      return `${mentalHealthBasePath}/suspected-mental-health-conditions`
-    }
-
-    if (hasConfirmedMentalHealthCondition(data)) {
+    if (hasConfirmedMentalHealthCondition(data) || hasSuspectedMentalHealthCondition(data)) {
       return `${mentalHealthBasePath}/mental-health-conditions`
     }
 
@@ -1041,7 +1034,7 @@ function getMentalHealthBackHref(page, data = {}) {
     return `${mentalHealthBasePath}/children`
   }
 
-  if (page.slug === 'environmental-risks' && data.hasCurrentRisks !== 'Yes') {
+  if (page.slug === 'reason-for-referral' && data.hasCurrentRisks !== 'Yes') {
     return `${mentalHealthBasePath}/current-risks`
   }
 
@@ -1083,24 +1076,12 @@ function getMentalHealthNextHref(page, data = {}) {
   }
 
   if (page.slug === 'communication-needs') {
-    if (hasConfirmedMentalHealthCondition(data)) {
-      return `${mentalHealthBasePath}/mental-health-conditions`
-    }
-
-    if (hasSuspectedMentalHealthCondition(data)) {
-      return `${mentalHealthBasePath}/suspected-mental-health-conditions`
-    }
-
-    return `${mentalHealthBasePath}/children`
-  }
-
-  if (page.slug === 'mental-health-conditions') {
-    return hasSuspectedMentalHealthCondition(data)
-      ? `${mentalHealthBasePath}/suspected-mental-health-conditions`
+    return hasConfirmedMentalHealthCondition(data) || hasSuspectedMentalHealthCondition(data)
+      ? `${mentalHealthBasePath}/mental-health-conditions`
       : `${mentalHealthBasePath}/children`
   }
 
-  if (page.slug === 'suspected-mental-health-conditions') {
+  if (page.slug === 'mental-health-conditions') {
     return `${mentalHealthBasePath}/children`
   }
 
@@ -1127,11 +1108,11 @@ function getMentalHealthNextHref(page, data = {}) {
   if (page.slug === 'current-risks') {
     return data.hasCurrentRisks === 'Yes'
       ? `${mentalHealthBasePath}/current-risk-details`
-      : `${mentalHealthBasePath}/environmental-risks`
+      : `${mentalHealthBasePath}/reason-for-referral`
   }
 
   if (page.slug === 'current-risk-details') {
-    return `${mentalHealthBasePath}/environmental-risks`
+    return `${mentalHealthBasePath}/reason-for-referral`
   }
 
   if (page.slug === 'reason-for-referral') {
@@ -1546,7 +1527,7 @@ function getMentalHealthSummarySections(data) {
   }
 
   if (hasSuspectedMentalHealthCondition(data)) {
-    addMentalHealthSummaryRow(needsRows, 'Suspected condition details', data.suspectedConditionsDetails, `${mentalHealthBasePath}/suspected-mental-health-conditions`)
+    addMentalHealthSummaryRow(needsRows, 'Suspected condition details', data.suspectedConditionsDetails, `${mentalHealthBasePath}/mental-health-conditions`)
   }
 
   addMentalHealthSummaryRow(needsRows, 'Professionals involved', data.clinicalProfessionalsInvolved, `${mentalHealthBasePath}/clinical-professionals`)
@@ -1579,12 +1560,10 @@ function getMentalHealthSummarySections(data) {
     if (data.currentRisks && data.currentRisks.includes('Other')) {
       addMentalHealthSummaryRow(safetyRows, 'Other current risks', data.currentRisksOtherDetails, `${mentalHealthBasePath}/current-risk-details`)
     }
-  }
 
-  addMentalHealthSummaryRow(safetyRows, 'Environmental risks', data.hasEnvironmentalRisks, `${mentalHealthBasePath}/environmental-risks`)
-
-  if (data.hasEnvironmentalRisks === 'Yes') {
-    addMentalHealthSummaryRow(safetyRows, 'Environmental risk details', data.environmentalRisksDetails, `${mentalHealthBasePath}/environmental-risks`)
+    if (data.currentRisks && data.currentRisks.includes('Hoarding and environmental hazards')) {
+      addMentalHealthSummaryRow(safetyRows, 'Environmental risk details', data.environmentalRisksDetails, `${mentalHealthBasePath}/current-risk-details`)
+    }
   }
 
   addMentalHealthSummaryRow(reasonRows, 'Reason for referral', data.referralReasons, `${mentalHealthBasePath}/reason-for-referral`)
@@ -1699,7 +1678,9 @@ router.get('/mental-health-referral/check-answers', (req, res) => {
 
   res.render('mental-health-referral/check-answers', {
     sections: getMentalHealthSummarySections(req.session.data),
-    backHref: getMentalHealthCheckAnswersBackHref(req.session.data)
+    backHref: getMentalHealthCheckAnswersBackHref(req.session.data),
+    pageNumber: mentalHealthCheckAnswersPageNumber,
+    totalPages: mentalHealthTotalPages
   })
 })
 
@@ -1708,11 +1689,17 @@ router.post('/mental-health-referral/check-answers', (req, res) => {
 })
 
 router.get('/mental-health-referral/confirmation', (req, res) => {
-  res.render('mental-health-referral/confirmation')
+  res.render('mental-health-referral/confirmation', {
+    pageNumber: mentalHealthConfirmationPageNumber,
+    totalPages: mentalHealthTotalPages
+  })
 })
 
 router.get('/mental-health-referral/submission-email', (req, res) => {
-  res.render('mental-health-referral/submission-email')
+  res.render('mental-health-referral/submission-email', {
+    pageNumber: mentalHealthSubmissionEmailPageNumber,
+    totalPages: mentalHealthTotalPages
+  })
 })
 
 router.get('/mental-health-referral/clinical-professional-details', (req, res) => {
@@ -1963,6 +1950,18 @@ router.all('/mental-health-referral/advocate-contact', (req, res) => {
   res.redirect(`${mentalHealthBasePath}/advocate-details`)
 })
 
+router.all('/mental-health-referral/suspected-mental-health-conditions', (req, res) => {
+  const query = req.url.includes('?') ? `?${req.url.split('?')[1]}` : ''
+
+  res.redirect(`${mentalHealthBasePath}/mental-health-conditions${query}`)
+})
+
+router.all('/mental-health-referral/environmental-risks', (req, res) => {
+  res.redirect(req.session.data.hasCurrentRisks === 'Yes'
+    ? `${mentalHealthBasePath}/current-risk-details`
+    : `${mentalHealthBasePath}/current-risks`)
+})
+
 router.get('/mental-health-referral/:slug', (req, res, next) => {
   const page = mentalHealthPageBySlug[req.params.slug]
 
@@ -1990,13 +1989,7 @@ router.get('/mental-health-referral/:slug', (req, res, next) => {
     return res.redirect(`${mentalHealthBasePath}/current-risks`)
   }
 
-  if (page.slug === 'mental-health-conditions' && !hasConfirmedMentalHealthCondition(req.session.data)) {
-    return hasSuspectedMentalHealthCondition(req.session.data)
-      ? res.redirect(`${mentalHealthBasePath}/suspected-mental-health-conditions`)
-      : res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
-  }
-
-  if (page.slug === 'suspected-mental-health-conditions' && !hasSuspectedMentalHealthCondition(req.session.data)) {
+  if (page.slug === 'mental-health-conditions' && !hasConfirmedMentalHealthCondition(req.session.data) && !hasSuspectedMentalHealthCondition(req.session.data)) {
     return res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
   }
 
@@ -2033,13 +2026,7 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
     return res.redirect(`${mentalHealthBasePath}/current-risks`)
   }
 
-  if (page.slug === 'mental-health-conditions' && !hasConfirmedMentalHealthCondition(req.session.data)) {
-    return hasSuspectedMentalHealthCondition(req.session.data)
-      ? res.redirect(`${mentalHealthBasePath}/suspected-mental-health-conditions`)
-      : res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
-  }
-
-  if (page.slug === 'suspected-mental-health-conditions' && !hasSuspectedMentalHealthCondition(req.session.data)) {
+  if (page.slug === 'mental-health-conditions' && !hasConfirmedMentalHealthCondition(req.session.data) && !hasSuspectedMentalHealthCondition(req.session.data)) {
     return res.redirect(`${mentalHealthBasePath}/mental-health-conditions-check`)
   }
 
@@ -2153,10 +2140,17 @@ router.post('/mental-health-referral/:slug', (req, res, next) => {
   if (page.slug === 'current-risks' && req.session.data.hasCurrentRisks !== 'Yes') {
     req.session.data.currentRisks = []
     req.session.data.currentRisksOtherDetails = ''
+    req.session.data.environmentalRisksDetails = ''
+    req.session.data.hasEnvironmentalRisks = ''
   }
 
   if (page.slug === 'current-risk-details' && !asArray(req.session.data.currentRisks).includes('Other')) {
     req.session.data.currentRisksOtherDetails = ''
+  }
+
+  if (page.slug === 'current-risk-details' && !asArray(req.session.data.currentRisks).includes('Hoarding and environmental hazards')) {
+    req.session.data.environmentalRisksDetails = ''
+    req.session.data.hasEnvironmentalRisks = ''
   }
 
   if (page.slug === 'advocate' && req.session.data.hasAdvocate === 'No') {
