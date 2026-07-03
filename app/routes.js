@@ -385,16 +385,20 @@ const mentalHealthPages = [
     title: 'Reasonable adjustments for the person you’re referring',
     fields: [
       {
-        type: 'radios',
+        type: 'select',
         name: 'englishSpeakingAbility',
         label: 'How well can they speak English?',
-        labelClasses: 'govuk-fieldset__legend--m',
         error: 'Select how well they can speak English',
         items: [
           'English is their first language',
-          'They can speak English well',
           'They can speak English a little',
-          'They cannot speak English'
+          'They can understand English a little',
+          'They can speak and understand English a little',
+          'They can speak and understand English to a good level',
+          'They use Makaton',
+          'They do not speak or understand English',
+          'They are non-verbal but understand English',
+          'They are non-verbal and use pictures'
         ]
       },
       {
@@ -1478,6 +1482,20 @@ function getMentalHealthSummarySections(data) {
     addMentalHealthSummaryRow(personRows, 'Advocate contact methods', getMentalHealthContactSummaryValues(data.advocateContactMethods, data.advocateContactEmail, data.advocateContactPhone), `${mentalHealthBasePath}/advocate-details`)
   }
 
+  addMentalHealthSummaryRow(personRows, 'Professionals involved', data.clinicalProfessionalsInvolved, `${mentalHealthBasePath}/clinical-professionals`)
+
+  if (data.clinicalProfessionalsInvolved === 'Yes') {
+    const professionals = getClinicalProfessionalEntries(data)
+
+    if (professionals.length) {
+      professionals.forEach((professional) => {
+        addMentalHealthSummaryRow(personRows, 'Professional', professional.summary, `${mentalHealthBasePath}/clinical-professional-details`)
+      })
+    } else {
+      addMentalHealthSummaryRow(personRows, 'Professional', '', `${mentalHealthBasePath}/clinical-professional-details`)
+    }
+  }
+
   addMentalHealthSummaryRow(personRows, 'NHS number known', data.knowsNhsNumber, `${mentalHealthBasePath}/identifiers`)
 
   if (data.knowsNhsNumber === 'Yes') {
@@ -1528,20 +1546,6 @@ function getMentalHealthSummarySections(data) {
 
   if (hasSuspectedMentalHealthCondition(data)) {
     addMentalHealthSummaryRow(needsRows, 'Suspected condition details', data.suspectedConditionsDetails, `${mentalHealthBasePath}/mental-health-conditions`)
-  }
-
-  addMentalHealthSummaryRow(needsRows, 'Professionals involved', data.clinicalProfessionalsInvolved, `${mentalHealthBasePath}/clinical-professionals`)
-
-  if (data.clinicalProfessionalsInvolved === 'Yes') {
-    const professionals = getClinicalProfessionalEntries(data)
-
-    if (professionals.length) {
-      professionals.forEach((professional) => {
-        addMentalHealthSummaryRow(needsRows, 'Professional', professional.summary, `${mentalHealthBasePath}/clinical-professional-details`)
-      })
-    } else {
-      addMentalHealthSummaryRow(needsRows, 'Professional', '', `${mentalHealthBasePath}/clinical-professional-details`)
-    }
   }
 
   addMentalHealthSummaryRow(safetyRows, 'Lives with children', data.livesWithChildren, `${mentalHealthBasePath}/children`)
