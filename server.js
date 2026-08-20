@@ -28,7 +28,7 @@ nunjucksEnv.addFilter('json', (value) => JSON.stringify(value, null, 2))
 app.set('view engine', 'njk')
 app.set('views', appViews)
 
-if (isProduction) {
+if (false) {
   app.use((req, res, next) => {
     if (!prototypePassword) {
       return res.status(503).send('PROTOTYPE_PASSWORD is not configured')
