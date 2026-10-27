@@ -9,11 +9,13 @@ Install these apps first:
 - [GitHub Desktop](https://desktop.github.com/download/), to clone and update the repository.
 - [Codex](https://openai.com/codex/), to ask for changes to journeys and pages.
 - [Visual Studio Code](https://code.visualstudio.com/), to open and read the code when you want to inspect what Codex changed.
-- The current [Node.js](https://nodejs.org/en) 22 LTS desktop installer, to run the prototype on your Mac.
+- The [Node.js 22.23.4 macOS desktop installer](https://nodejs.org/dist/v22.23.4/node-v22.23.4.pkg), to run the prototype on your Mac.
 
 The normal Node.js desktop installer includes `node` and `npm`. It does not include `nvm`, and designers do not need `nvm`.
 
-If you already use `nvm`, the project includes `.nvmrc` so `start.command` and `update.command` can select Node 22 for you.
+If you already use `nvm`, the project includes `.nvmrc` so `start.command` and `update.command` can install and select Node 22.23.4 for you.
+
+If you installed Node using the desktop installer, run the 22.23.4 installer linked above, then reopen Terminal and check that `node --version` reports `v22.23.4`.
 
 ## Clone with GitHub Desktop
 

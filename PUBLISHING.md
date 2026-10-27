@@ -122,10 +122,13 @@ Add these before the first deploy if you can.
 Required:
 
 ```text
+NODE_VERSION=22.23.4
 PROTOTYPE_PASSWORD
 ```
 
-Set this to the password people must enter before they can view the deployed prototype.
+Set `NODE_VERSION` to `22.23.4` to match the project's `.nvmrc`. Set `PROTOTYPE_PASSWORD` to the password people must enter before they can view the deployed prototype.
+
+For existing deployments, set `NODE_VERSION=22.23.4` on each Render service, then rebuild and redeploy each service. Changing the local `.nvmrc` or an environment variable alone does not update an already running service. Check each service's deployment logs to confirm it uses Node.js 22.23.4 and finishes successfully.
 
 Recommended:
 

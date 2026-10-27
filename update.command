@@ -15,7 +15,7 @@ fi
 
 if ! command -v node >/dev/null 2>&1; then
   echo "Node.js is not installed."
-  echo "Install Node.js 22, then double-click this file again."
+  echo "Install Node.js 22.23.4, then double-click this file again."
   echo "See DESIGNER-SETUP.md for setup steps."
   exit 1
 fi
